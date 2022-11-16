@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+WRF Nature Run Workflow
+
+Loosely based of the RRFS workflow
+
+shawn.s.murdzek@noaa.gov
+-->
+
+<!DOCTYPE workflow [
+
+<!--
+Parameters needed by the job scheduler.
+-->
+<!ENTITY ACCOUNT         "wrfruc">
+<!ENTITY SCHED           "slurm">
+<!ENTITY QUEUE_DEFAULT   "batch">
+
+<!--
+Workflow task names.
+-->
+<!ENTITY GEOGRID_TN   "geogrid">
+<!ENTITY UNGRIB_TN    "ungrib">
+<!ENTITY METGRID_TN   "metgrid">
+<!ENTITY RUN_REAL_TN  "real">
+<!ENTITY RUN_WRF_TN   "wrf">
+<!ENTITY RUN_UPP_TN   "upp">
+<!ENTITY PYGRAF_TN    "pygraf">
+<!ENTITY PREP_NC_TN   "precondition">
+
+<!ENTITY TAG          "NATURE_RUN">
+
+<!--
+Number of physical cores per node for the current machine.  This is used
+below in the <nodesize> tag, but that tag is not clearly documented.  This
+parameter may be unnecessary since each task now has its own variable that
+specifies the number of processes per node being used (the PPN_... entities).
+-->
+<!ENTITY NCORES_PER_NODE "24">
+
+<!--
+Directories and files.
+-->
+<!ENTITY JOBSDIR                  "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr">
+<!ENTITY WPSDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/WPS">
+<!ENTITY WRFDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/WRF">
+<!ENTITY DATADIR                  "/lfs4/BMC/wrfruc/murdzek/nature_run_test/RAP_data/grib">
+<!ENTITY LOAD_MODULES_RUN_TASK_FP "/lfs4/BMC/wrfruc/murdzek/nature_run_wflow/load_modules_run_task.sh">
+
+<!--
+Reservation types.  Reservations specify the queue/partition and account
+to use for a given task.
+-->
+<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>sjet,vjet,kjet,xjet</partition><native>&RRFS_RESERVE;</native>">
+
+
+]>
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="1" cyclelifespan="05:00:00:00">
+
+
+  <cycledef group="wps"> 202107242300 202107250000 01:00:00 </cycledef>
+
+  <cycledef group="wrf"> 202107242300 202107250000 01:00:00 </cycledef>
+  <cycledef group="post"> 202107242300 202107250000 01:00:00 </cycledef>
+  <cycledef group="create_obs"> 202107242300 202107250000 01:00:00 </cycledef>
+
+  <log>
+    <cyclestr>&JOBSDIR;/NATURE_RUN_wflow.log</cyclestr>
+  </log>
+
+
+
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&GEOGRID_TN;" cycledefs="wps" maxtries="1">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&GEOGRID_TN;" "&WPSDIR;/geogrid.exe"</command>
+  
+    <nodes>1:ppn=1</nodes>
+    <walltime>00:30:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&GEOGRID_TN;</jobname>
+    <join><cyclestr>&WPSDIR;/&GEOGRID_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <dependency>
+      <and>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.nc</cyclestr></datadep>
+        </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.nc_0000</cyclestr></datadep>
+        </not>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&UNGRIB_TN;" cycledefs="wps" maxtries="1">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&UNGRIB_TN;" "&WPSDIR;/link_grib.csh &DATADIR; && &WPSDIR;/ungrib.exe"</command>
+  
+    <nodes>1:ppn=1</nodes>
+    <walltime>00:30:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&UNGRIB_TN;</jobname>
+    <join><cyclestr>&WPSDIR;/&UNGRIB_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <dependency>
+      <not>
+        <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/GRIBFILE.AAA</cyclestr></datadep>
+      </not>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&METGRID_TN;" cycledefs="wps" maxtries="1">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "&METGRID_TN;" "&WPSDIR;/metgrid.exe"</command>
+  
+    <nodes>1:ppn=1</nodes>
+    <walltime>00:30:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&METGRID_TN;</jobname>
+    <join><cyclestr>&WPSDIR;/&METGRID_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <dependency>
+      <and>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>
+        </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
+        </not>
+        <taskdep task="&GEOGRID_TN;"/>
+        <taskdep task="&UNGRIB_TN;"/>
+      </and>
+    </dependency>
+
+  </task>
+
+</workflow>
