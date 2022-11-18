@@ -2,10 +2,12 @@
 
 date
 
-task_name="$1"
-task="$2"
+task="$1"
 
-hrrr_env
+source wrf_jet.env
+
+# Determine number of processors being used
+export NPROC=$((${NODES}*${PPN}))
 
 $task
 

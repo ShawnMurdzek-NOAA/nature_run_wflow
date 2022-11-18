@@ -27,7 +27,7 @@ Workflow task names.
 <!ENTITY RUN_WRF_TN   "wrf">
 <!ENTITY RUN_UPP_TN   "upp">
 <!ENTITY PYGRAF_TN    "pygraf">
-<!ENTITY PREP_NC_TN   "precondition">
+<!ENTITY PREC_NC_TN   "precondition">
 
 <!ENTITY TAG          "NATURE_RUN">
 
@@ -37,7 +37,7 @@ below in the <nodesize> tag, but that tag is not clearly documented.  This
 parameter may be unnecessary since each task now has its own variable that
 specifies the number of processes per node being used (the PPN_... entities).
 -->
-<!ENTITY NCORES_PER_NODE "24">
+<!ENTITY NCORES_PER_NODE "12">
 
 <!--
 Directories and files.
@@ -45,25 +45,57 @@ Directories and files.
 <!ENTITY JOBSDIR                  "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr">
 <!ENTITY WPSDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/WPS">
 <!ENTITY WRFDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/WRF">
+<!ENTITY UPPDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/UPP">
+<!ENTITY PYGRAFDIR                "/lfs4/BMC/wrfruc/murdzek/pygraf">
+<!ENTITY GRAPHICSDIR              "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/graphics">
+<!ENTITY FAKEOBS_CODE_DIR          "/lfs4/BMC/wrfruc/murdzek/py_scripts/synthetic_obs">
+<!ENTITY FAKEOBS_OUT_DIR           "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/synthetic_obs">
 <!ENTITY DATADIR                  "/lfs4/BMC/wrfruc/murdzek/nature_run_test/RAP_data/grib">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "/lfs4/BMC/wrfruc/murdzek/nature_run_wflow/load_modules_run_task.sh">
+
+<!--
+Nature run length
+-->
+<!ENTITY NATURE_LENGTH "00:01:00:00">
+
+<!--
+Command used to run programs in parallel
+-->
+<!ENTITY APRUN "srun -n">
+
+<!--
+Number of nodes and cores for each task
+-->
+<!ENTITY GEO_NODES  "1">
+<!ENTITY GEO_PPN    "1">
+<!ENTITY MET_NODES  "1">
+<!ENTITY MET_PPN    "1">
+<!ENTITY REAL_NODES "1">
+<!ENTITY REAL_PPN   "5">
+<!ENTITY WRF_NODES  "1">
+<!ENTITY WRF_PPN    "12">
+<!ENTITY UPP_NODES  "1">
+<!ENTITY UPP_PPN    "12">
+<!ENTITY PYG_NODES  "1">
+<!ENTITY PYG_PPN    "4">
+<!ENTITY PREC_NODES "1">
+<!ENTITY PREC_PPN   "1">
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
 to use for a given task.
 -->
-<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>sjet,vjet,kjet,xjet</partition><native>&RRFS_RESERVE;</native>">
+<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>tjet,ujet,sjet,vjet,kjet,xjet</partition>">
 
 
 ]>
 <workflow realtime="F" scheduler="&SCHED;" cyclethrottle="1" cyclelifespan="05:00:00:00">
 
 
-  <cycledef group="wps"> 202107242300 202107250000 01:00:00 </cycledef>
-
-  <cycledef group="wrf"> 202107242300 202107250000 01:00:00 </cycledef>
-  <cycledef group="post"> 202107242300 202107250000 01:00:00 </cycledef>
-  <cycledef group="create_obs"> 202107242300 202107250000 01:00:00 </cycledef>
+  <cycledef group="wps"> 202107242300 202107250000 02:00:00 </cycledef>
+  <cycledef group="wrf"> 202107242300 202107250000 02:00:00 </cycledef>
+  <cycledef group="post"> 202107242300 202107250000 02:00:00 </cycledef>
+  <cycledef group="create_obs"> 202107242300 202107250000 02:00:00 </cycledef>
 
   <log>
     <cyclestr>&JOBSDIR;/NATURE_RUN_wflow.log</cyclestr>
@@ -75,17 +107,22 @@ to use for a given task.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&GEOGRID_TN;" cycledefs="wps" maxtries="1">
+  <task name="&GEOGRID_TN;" cycledefs="wps" maxtries="3">
 
     &RSRV_DEFAULT;
   
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&GEOGRID_TN;" "&WPSDIR;/geogrid.exe"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_geogrid.sh"</command>
   
-    <nodes>1:ppn=1</nodes>
+    <nodes>&GEO_NODES;:ppn=&GEO_PPN;</nodes>
     <walltime>00:30:00</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&GEOGRID_TN;</jobname>
     <join><cyclestr>&WPSDIR;/&GEOGRID_TN;_@Y@m@d@H.log</cyclestr></join>
+    
+    <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
+    <envar><name>APRUN</name><value>&APRUN;</value></envar>
+    <envar><name>NODES</name><value>&GEO_NODES;</value></envar>
+    <envar><name>PPN</name><value>&GEO_PPN;</value></envar>
 
     <dependency>
       <and>
@@ -103,11 +140,11 @@ to use for a given task.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&UNGRIB_TN;" cycledefs="wps" maxtries="1">
+  <task name="&UNGRIB_TN;" cycledefs="wps" maxtries="3">
 
     &RSRV_DEFAULT;
   
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&UNGRIB_TN;" "&WPSDIR;/link_grib.csh &DATADIR; && &WPSDIR;/ungrib.exe"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_ungrib.sh"</command>
   
     <nodes>1:ppn=1</nodes>
     <walltime>00:30:00</walltime>
@@ -115,9 +152,12 @@ to use for a given task.
     <jobname>&TAG;_&UNGRIB_TN;</jobname>
     <join><cyclestr>&WPSDIR;/&UNGRIB_TN;_@Y@m@d@H.log</cyclestr></join>
 
+    <envar><name>DATADIR</name><value>&DATADIR;</value></envar>
+    <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
+    
     <dependency>
       <not>
-        <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/GRIBFILE.AAA</cyclestr></datadep>
+        <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/RAP:@Y-@m-@d_@H</cyclestr></datadep>
       </not>
     </dependency>
 
@@ -126,18 +166,23 @@ to use for a given task.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&METGRID_TN;" cycledefs="wps" maxtries="1">
+  <task name="&METGRID_TN;" cycledefs="wps" maxtries="3">
 
     &RSRV_DEFAULT;
   
-    <command>&LOAD_MODULES_RUN_TASK_FP; "&METGRID_TN;" "&WPSDIR;/metgrid.exe"</command>
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_metgrid.sh"</command>
   
-    <nodes>1:ppn=1</nodes>
+    <nodes>&MET_NODES;:ppn=&MET_PPN;</nodes>
     <walltime>00:30:00</walltime>
     <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&METGRID_TN;</jobname>
     <join><cyclestr>&WPSDIR;/&METGRID_TN;_@Y@m@d@H.log</cyclestr></join>
 
+    <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
+    <envar><name>APRUN</name><value>&APRUN;</value></envar>
+    <envar><name>NODES</name><value>&MET_NODES;</value></envar>
+    <envar><name>PPN</name><value>&MET_PPN;</value></envar>
+    
     <dependency>
       <and>
         <not>
@@ -146,11 +191,185 @@ to use for a given task.
         <not>
           <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
         </not>
-        <taskdep task="&GEOGRID_TN;"/>
-        <taskdep task="&UNGRIB_TN;"/>
+        <or>
+          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/geo_em.d01.nc</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/geo_em.d01.nc_0000</cyclestr></datadep>
+        </or>
+        <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/RAP:@Y-@m-@d_@H</cyclestr></datadep>
       </and>
     </dependency>
 
   </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&RUN_REAL_TN;" cycledefs="wrf" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_real.sh"</command>
+  
+    <nodes>&REAL_NODES;:ppn=&REAL_PPN;</nodes>
+    <walltime>00:30:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&RUN_REAL_TN;</jobname>
+    <join><cyclestr>&WRFDIR;/run/&RUN_REAL_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
+    <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
+    <envar><name>APRUN</name><value>&APRUN;</value></envar>
+    <envar><name>NODES</name><value>&REAL_NODES;</value></envar>
+    <envar><name>PPN</name><value>&REAL_PPN;</value></envar>
+
+    <dependency>
+      <and>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfinput_d01</cyclestr></datadep>
+        </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfinput_d01_0000</cyclestr></datadep>
+        </not>
+        <or>
+          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&RUN_WRF_TN;" cycledefs="wrf" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_wrf.sh"</command>
+  
+    <nodes>&WRF_NODES;:ppn=&WRF_PPN;</nodes>
+    <walltime>01:00:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&RUN_WRF_TN;</jobname>
+    <join><cyclestr>&WRFDIR;/run/&RUN_WRF_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
+    <envar><name>APRUN</name><value>&APRUN;</value></envar>
+    <envar><name>NODES</name><value>&WRF_NODES;</value></envar>
+    <envar><name>PPN</name><value>&WRF_PPN;</value></envar>
+
+    <dependency>
+      <and>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
+        </not>
+        <or>
+          <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfinput_d01</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfinput_d01_0000</cyclestr></datadep>
+        </or>
+      </and>
+    </dependency>
+
+  </task>
+
+<!--
+The remaining tasks need some work. All of the tasks are currently configured to run on a single
+file. This needs to be changed (the most difficult one to change will probably be UPP). The Python 
+program called by the PREC_NC_TN task also needs to be reconfigured it can either take file names
+from the command line, or read a text file with a list of file names to process.
+-->
+
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&RUN_UPP_TN;" cycledefs="post" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_upp.sh"</command>
+  
+    <nodes>&UPP_NODES;:ppn=&UPP_PPN;</nodes>
+    <walltime>01:00:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&RUN_UPP_TN;</jobname>
+    <join><cyclestr>&UPPDIR;/&RUN_UPP_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>UPPDIR</name><value>&UPPDIR;</value></envar>
+    <envar><name>EXE_ROOT</name><value>&UPPDIR;/exec</value></envar>
+    <envar><name>DATAHOME</name><value>&WRFDIR;/run</value></envar>
+    <envar><name>MODEL</name><value>RAP</value></envar>
+    <envar><name>START_TIME</name><value>@Y@m@d@H</value></envar>
+    <envar><name>FCST_TIME</name><value>00</value></envar>
+    <envar><name>DATAWRFHOME</name><value>&WRFDIR;/run</value></envar>
+    <envar><name>STATIC_DIR</name><value>/lfs1/BMC/wrfruc/ejames/hrrrretro/HRRRv4_jan2022_faa/static/UPP</value></envar>
+    <envar><name>STATICWRF_DIR</name><value>/lfs1/BMC/wrfruc/ejames/hrrrretro/HRRRv4_jan2022_faa/static/WRF</value></envar>
+
+    <dependency>
+      <and>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfnat_hrconus_00.grib2</cyclestr></datadep>
+        </not>
+        <datadep age="00:00:10:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&PYGRAF_TN;" cycledefs="post" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_pygraf.sh"</command>
+  
+    <nodes>&PYG_NODES;:ppn=&PYG_PPN;</nodes>
+    <walltime>01:00:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&PYGRAF_TN;</jobname>
+    <join><cyclestr>&PYGRAFDIR;/&PYGRAF_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>PYGRAFDIR</name><value>&PYGRAFDIR;</value></envar>
+    <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
+    <envar><name>GRAPHICSDIR</name><value>&GRAPHICSDIR;</value></envar>
+    <envar><name>START</name><value>@Y@m@d@H</value></envar>
+    <envar><name>NODES</name><value>&PYG_NODES;</value></envar>
+    <envar><name>PPN</name><value>&PYG_PPN;</value></envar>
+
+    <dependency>
+      <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfnat_hrconus_00.grib2</cyclestr></datadep>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+<!--
+  <task name="&PREC_NC_TN;" cycledefs="create_obs" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_prep_nc.sh"</command>
+  
+    <nodes>&PREC_NODES;:ppn=&PREC_PPN;</nodes>
+    <walltime>01:00:00</walltime>
+    <nodesize>&NCORES_PER_NODE;</nodesize>
+    <jobname>&TAG;_&PREC_NC_TN;</jobname>
+    <join><cyclestr>&FAKEOBS_CODE_DIR;/&PREC_NC_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>FAKEOBS_CODE_DIR</name><value>&FAKEOBS_CODE_DIR;</value></envar>
+    <envar><name>FAKEOBS_OUT_DIR</name><value>&FAKEOBS_OUT_DIR;</value></envar>
+    <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
+
+    <dependency>
+      <datadep age="00:00:10:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
+    </dependency>
+
+  </task>
+-->
 
 </workflow>
