@@ -22,8 +22,10 @@ edit your crontab, use the following command in your home direcory:
 The following two lines should be at the beginning of your crontab to insure than code runs properly 
 and that you are emailed with error messages:
 
-`#!/bin/sh --login
-MAILTO=email@noaa.gov`
+```
+#!/bin/sh --login
+MAILTO=email@noaa.gov
+```
 
 Add the following line to run the workflow every 15 minutes:
 
