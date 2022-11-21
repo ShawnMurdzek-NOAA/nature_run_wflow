@@ -9,6 +9,9 @@ fi
 if [ ${NPROC} > 1 ]; then
   ${APRUN} ${NPROC} ./geogrid.exe
   e=$?
+  tar cvf geogrid.log.tar geogrid.log.*
+  rm geogrid.log.1*
+  rm geogrid.log.0*
 else
   ./geogrid.exe
   e=$?

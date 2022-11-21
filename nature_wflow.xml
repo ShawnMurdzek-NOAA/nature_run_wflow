@@ -81,7 +81,7 @@ Number of cores for each task
 Reservation types.  Reservations specify the queue/partition and account
 to use for a given task.
 -->
-<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>tjet,ujet,sjet,vjet,kjet,xjet</partition>">
+<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>tjet,ujet</partition>">
 <!ENTITY RSRV_WRF "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>xjet</partition>">
 
 
@@ -126,6 +126,9 @@ to use for a given task.
         </not>
         <not>
           <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.nc_0000</cyclestr></datadep>
+        </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.tar</cyclestr></datadep>
         </not>
         <streq><left>&RUN_TASK_GEOGRID;</left><right>TRUE</right></streq>
       </and>
@@ -186,6 +189,9 @@ to use for a given task.
         <not>
           <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
         </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.tar</cyclestr></datadep>
+        </not>
         <or>
           <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/geo_em.d01.nc</cyclestr></datadep>
           <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/geo_em.d01.nc_0000</cyclestr></datadep>
@@ -222,6 +228,9 @@ to use for a given task.
         </not>
         <not>
           <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfinput_d01_0000</cyclestr></datadep>
+        </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfinput.tar</cyclestr></datadep>
         </not>
         <or>
           <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>

@@ -12,4 +12,4 @@ e=$?
 report-mem
 date
 
-exit e
+exit $e
