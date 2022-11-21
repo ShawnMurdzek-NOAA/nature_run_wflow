@@ -40,14 +40,6 @@ Switchess that control whether certain tasks are run
 <!ENTITY RUN_TASK_PREC_NC "FALSE">
 
 <!--
-Number of physical cores per node for the current machine.  This is used
-below in the <nodesize> tag, but that tag is not clearly documented.  This
-parameter may be unnecessary since each task now has its own variable that
-specifies the number of processes per node being used (the PPN_... entities).
--->
-<!ENTITY NCORES_PER_NODE "12">
-
-<!--
 Directories and files.
 -->
 <!ENTITY SIMDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_1.5km_CONUS">
@@ -120,7 +112,6 @@ to use for a given task.
   
     <cores>&GEO_CORES;</cores>
     <walltime>00:30:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&GEOGRID_TN;</jobname>
     <join><cyclestr>&WPSDIR;/&GEOGRID_TN;_@Y@m@d@H.log</cyclestr></join>
     
@@ -153,7 +144,6 @@ to use for a given task.
   
     <nodes>1:ppn=1</nodes>
     <walltime>00:30:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&UNGRIB_TN;</jobname>
     <join><cyclestr>&WPSDIR;/&UNGRIB_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -181,7 +171,6 @@ to use for a given task.
   
     <cores>&MET_CORES;</cores>
     <walltime>00:30:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&METGRID_TN;</jobname>
     <join><cyclestr>&WPSDIR;/&METGRID_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -218,7 +207,6 @@ to use for a given task.
   
     <cores>&REAL_CORES;</cores>
     <walltime>00:30:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&RUN_REAL_TN;</jobname>
     <join><cyclestr>&WRFDIR;/run/&RUN_REAL_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -255,7 +243,6 @@ to use for a given task.
   
     <cores>&WRF_CORES;</cores>
     <walltime>02:00:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&RUN_WRF_TN;</jobname>
     <join><cyclestr>&WRFDIR;/run/&RUN_WRF_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -296,7 +283,6 @@ from the command line, or read a text file with a list of file names to process.
   
     <cores>&UPP_CORES;</cores>
     <walltime>01:00:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&RUN_UPP_TN;</jobname>
     <join><cyclestr>&UPPDIR;/&RUN_UPP_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -333,7 +319,6 @@ from the command line, or read a text file with a list of file names to process.
   
     <cores>&PYG_CORES;</cores>
     <walltime>01:00:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&PYGRAF_TN;</jobname>
     <join><cyclestr>&PYGRAFDIR;/&PYGRAF_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -363,7 +348,6 @@ from the command line, or read a text file with a list of file names to process.
   
     <cores>&PREC_CORES;</cores>
     <walltime>01:00:00</walltime>
-    <nodesize>&NCORES_PER_NODE;</nodesize>
     <jobname>&TAG;_&PREC_NC_TN;</jobname>
     <join><cyclestr>&FAKEOBS_CODE_DIR;/&PREC_NC_TN;_@Y@m@d@H.log</cyclestr></join>
 
