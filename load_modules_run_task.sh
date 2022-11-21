@@ -10,6 +10,9 @@ source wrf_jet.env
 export NPROC=$((${NODES}*${PPN}))
 
 $task
+e=$?
 
 report-mem
 date
+
+exit e

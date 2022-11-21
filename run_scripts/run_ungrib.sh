@@ -14,6 +14,7 @@ if [ -e namelist.wps.HRRR ]; then
   ./link_grib.csh ${RAPDIR}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
+  e=$?
   rm GRIB*
 
 elif [ -e namelist.wps.RAP ]; then
@@ -22,6 +23,7 @@ elif [ -e namelist.wps.RAP ]; then
   ./link_grib.csh ${RAPDIR}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
+  e=$?
   rm GRIB*
 
 else
@@ -29,6 +31,9 @@ else
   ./link_grib.csh ${RAPDIR}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
+  e=$?
   rm GRIB*
 
 fi
+
+exit $e

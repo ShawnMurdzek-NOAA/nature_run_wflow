@@ -47,3 +47,5 @@ python create_graphics.py \
          -o ${GRAPHICSDIR} \
          -s ${START} \
          --sites ./static/sites.txt
+
+exit $?

@@ -7,9 +7,9 @@ Rocoto workflow for running a WRF simulation that will serve as an Observing Sys
 - Compiled version of WRF in WRFDIR
 - Compiled version of WPS in WPSDIR
 - Compiled version of UPP in UPPDIR
-- RAP GRIB2 output (ICs and LBCs) in DATADIR
-- namelist.wps configured so that ungrib.exe produces RAP:YY-MM-DD\_HH files
-- Appropriate Vtable linked in WPS
+- RAP GRIB2 output (for ICs and LBCs) in RAPDIR
+- HRRR GRIB2 output (for ICs and LBCs) in HRRRDIR
+- namelist.wps.HRRR and namelist.wps.RAP files in WPSDIR
 - WRFDIR contains a run directory with real.exe, wrf.exe, and namelist.input
 
 ### Other Notes:

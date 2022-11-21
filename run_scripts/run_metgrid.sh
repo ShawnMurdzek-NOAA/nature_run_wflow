@@ -8,6 +8,10 @@ fi
 
 if [ ${NPROC} > 1 ]; then
   ${APRUN} ${NPROC} ./metgrid.exe
+  e=$?
 else
   ./metgrid.exe
+  e=$?
 fi
+
+exit $e

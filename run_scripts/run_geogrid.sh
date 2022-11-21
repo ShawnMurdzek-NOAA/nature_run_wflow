@@ -8,6 +8,10 @@ fi
 
 if [ ${NPROC} > 1 ]; then
   ${APRUN} ${NPROC} ./geogrid.exe
+  e=$?
 else
   ./geogrid.exe
+  e=$?
 fi
+
+exit $e

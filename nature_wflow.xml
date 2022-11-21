@@ -50,14 +50,15 @@ specifies the number of processes per node being used (the PPN_... entities).
 <!--
 Directories and files.
 -->
-<!ENTITY JOBSDIR                  "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr">
-<!ENTITY WPSDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/WPS">
-<!ENTITY WRFDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/WRF">
-<!ENTITY UPPDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/UPP">
+<!ENTITY SIMDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_1km_CAN_rockies">
+<!ENTITY JOBSDIR                  "&SIMDIR;">
+<!ENTITY WPSDIR                   "&SIMDIR;/WPS">
+<!ENTITY WRFDIR                   "&SIMDIR;/WRF">
+<!ENTITY UPPDIR                   "&SIMDIR;/UPP">
 <!ENTITY PYGRAFDIR                "/lfs4/BMC/wrfruc/murdzek/pygraf">
-<!ENTITY GRAPHICSDIR              "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/graphics">
+<!ENTITY GRAPHICSDIR              "&SIMDIR;/graphics">
 <!ENTITY FAKEOBS_CODE_DIR         "/lfs4/BMC/wrfruc/murdzek/py_scripts/synthetic_obs">
-<!ENTITY FAKEOBS_OUT_DIR          "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/synthetic_obs">
+<!ENTITY FAKEOBS_OUT_DIR          "&SIMDIR;/synthetic_obs">
 <!ENTITY RAPDIR                   "/lfs4/BMC/wrfruc/murdzek/RAP_data/grib">
 <!ENTITY HRRRDIR                  "/lfs4/BMC/wrfruc/murdzek/HRRR_data">
 <!ENTITY STATICDIR                "/lfs4/BMC/wrfruc/murdzek/static_data">
@@ -81,13 +82,13 @@ Number of nodes and cores for each task
 <!ENTITY MET_NODES  "1">
 <!ENTITY MET_PPN    "1">
 <!ENTITY REAL_NODES "1">
-<!ENTITY REAL_PPN   "5">
+<!ENTITY REAL_PPN   "1">
 <!ENTITY WRF_NODES  "1">
-<!ENTITY WRF_PPN    "12">
+<!ENTITY WRF_PPN    "1">
 <!ENTITY UPP_NODES  "1">
-<!ENTITY UPP_PPN    "12">
+<!ENTITY UPP_PPN    "1">
 <!ENTITY PYG_NODES  "1">
-<!ENTITY PYG_PPN    "4">
+<!ENTITY PYG_PPN    "1">
 <!ENTITY PREC_NODES "1">
 <!ENTITY PREC_PPN   "1">
 
