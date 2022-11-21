@@ -32,6 +32,14 @@ Workflow task names.
 <!ENTITY TAG          "NATURE_RUN">
 
 <!--
+Switchess that control whether certain tasks are run
+-->
+<!ENTITY RUN_TASK_GEOGRID "TRUE">
+<!ENTITY RUN_TASK_UPP     "FALSE">
+<!ENTITY RUN_TASK_PYGRAF  "FALSE">
+<!ENTITY RUN_TASK_PREC_NC "FALSE">
+
+<!--
 Number of physical cores per node for the current machine.  This is used
 below in the <nodesize> tag, but that tag is not clearly documented.  This
 parameter may be unnecessary since each task now has its own variable that
@@ -132,6 +140,7 @@ to use for a given task.
         <not>
           <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.nc_0000</cyclestr></datadep>
         </not>
+        <streq><left>&RUN_TASK_GEOGRID;</left><right>TRUE</right></streq>
       </and>
     </dependency>
 
@@ -312,6 +321,7 @@ from the command line, or read a text file with a list of file names to process.
           <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfnat_hrconus_00.grib2</cyclestr></datadep>
         </not>
         <datadep age="00:00:10:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
+        <streq><left>&RUN_TASK_UPP;</left><right>TRUE</right></streq>
       </and>
     </dependency>
 
@@ -340,7 +350,10 @@ from the command line, or read a text file with a list of file names to process.
     <envar><name>PPN</name><value>&PYG_PPN;</value></envar>
 
     <dependency>
-      <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfnat_hrconus_00.grib2</cyclestr></datadep>
+      <and>
+        <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfnat_hrconus_00.grib2</cyclestr></datadep>
+        <streq><left>&RUN_TASK_PYGRAF;</left><right>TRUE</right></streq>
+      </and>
     </dependency>
 
   </task>
@@ -348,7 +361,6 @@ from the command line, or read a text file with a list of file names to process.
 ************************************************************************
 ************************************************************************
 -->
-<!--
   <task name="&PREC_NC_TN;" cycledefs="create_obs" maxtries="3">
 
     &RSRV_DEFAULT;
@@ -366,10 +378,12 @@ from the command line, or read a text file with a list of file names to process.
     <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
 
     <dependency>
-      <datadep age="00:00:10:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
+      <and>
+        <datadep age="00:00:10:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
+        <streq><left>&RUN_TASK_PREC_NC;</left><right>TRUE</right></streq>
+      </and>
     </dependency>
 
   </task>
--->
 
 </workflow>
