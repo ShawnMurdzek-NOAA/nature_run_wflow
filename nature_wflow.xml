@@ -56,9 +56,11 @@ Directories and files.
 <!ENTITY UPPDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/UPP">
 <!ENTITY PYGRAFDIR                "/lfs4/BMC/wrfruc/murdzek/pygraf">
 <!ENTITY GRAPHICSDIR              "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/graphics">
-<!ENTITY FAKEOBS_CODE_DIR          "/lfs4/BMC/wrfruc/murdzek/py_scripts/synthetic_obs">
-<!ENTITY FAKEOBS_OUT_DIR           "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/synthetic_obs">
-<!ENTITY DATADIR                  "/lfs4/BMC/wrfruc/murdzek/nature_run_test/RAP_data/grib">
+<!ENTITY FAKEOBS_CODE_DIR         "/lfs4/BMC/wrfruc/murdzek/py_scripts/synthetic_obs">
+<!ENTITY FAKEOBS_OUT_DIR          "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_hrrr/synthetic_obs">
+<!ENTITY RAPDIR                   "/lfs4/BMC/wrfruc/murdzek/RAP_data/grib">
+<!ENTITY HRRRDIR                  "/lfs4/BMC/wrfruc/murdzek/HRRR_data">
+<!ENTITY STATICDIR                "/lfs4/BMC/wrfruc/murdzek/static_data">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "/lfs4/BMC/wrfruc/murdzek/nature_run_wflow/load_modules_run_task.sh">
 
 <!--
@@ -161,7 +163,9 @@ to use for a given task.
     <jobname>&TAG;_&UNGRIB_TN;</jobname>
     <join><cyclestr>&WPSDIR;/&UNGRIB_TN;_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>DATADIR</name><value>&DATADIR;</value></envar>
+    <envar><name>RAPDIR</name><value>&RAPDIR;</value></envar>
+    <envar><name>HRRRDIR</name><value>&HRRRDIR;</value></envar>
+    <envar><name>STATICDIR</name><value>&STATICDIR;</value></envar>
     <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
     
     <dependency>
