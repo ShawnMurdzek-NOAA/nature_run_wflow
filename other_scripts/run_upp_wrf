@@ -1,0 +1,373 @@
+#!/bin/ksh
+#
+set -x
+#--------------------------------------------------------
+# Updates:
+#
+# August 2005: Hui-Ya Chuang, NCEP: This script uses 
+# NCEP's Unipost to post processes WRF native model 
+# output, and uses copygb to horizontally interpolate posted 
+# output from native A-E to a regular projection grid. 
+#
+# July 2006: Meral Demirtas, NCAR/DTC: Added new "copygb" 
+# options and revised some parts for clarity. 
+#
+# April 2015: Modified to run NMM-B/NEMS, KRF(DTC)
+#
+# January 2019: Modified to remove NMMB/NMM and add FV3, TH (DTC)
+# 
+# October 2019: Modified for new unified build system;
+#               ndate.exe and copygb.exe have been removed
+#
+# October 2020: Modified to remove WRF and grib1; Add FV3LAM
+#               Updates for cmake build, Change exec name             
+#
+# May 2022: Modified to remove binarynemsiompiio; 
+#           Added netcdfpara; Removed netcdf;
+#           Changed UPP directory name and path             
+#
+# June 2022: Add 2D decomposition capabilities, TH (DTC)
+#
+# December 2022: Script re-written to only work with WRF nature
+#                run output.
+#--------------------------------------------------------
+#
+# This script runs the stand-alone community version of UPP
+#
+#--------------------------------------------------------
+
+#----------------------------------------------------------------------------------
+#--- USER EDIT DESCIPTIONS --------------------------------------------------------
+# See UPP User's Guide for more information
+# https://upp.readthedocs.io/en/latest/
+#
+# NOTE: Most of the variable mentioned below are set in the Rocoto workflow. Edit 
+# these variables in the workflow, nothing should need to be changed in this script
+#
+#----------------------------------------------------------------------------------
+# TOP_DIR       : Top level directory for building and running UPP
+# UPP_OUT       : Directory to save UPP output
+# UPP_HOME      : Location of the UPP directory
+# POSTEXEC      : Location of the UPP executable
+# modelDataPath : Location of the model output data files to be post-processed
+# txtCntrlFile  : Name and location of the flat text file that lists desired fields for output
+#                 WRF: postxconfig-NT-WRF.txt
+# CRTM          : Directory containing CRTM fix files
+# model         : What model is used? WRF
+# inFormat      : Format of the model data 
+#                 WRF - "netcdfpara"
+# outFormat     : Format of output from UPP 
+#                 grib2 
+# startdate     : Simulation start date (YYYYmmDDHHMM)
+# lastdate      : Last simulation output time to be post-processed (YYYYmmDDHHMM)
+# incrementmin  : Increment (in minutes) between model output files
+#                 * Do not set to 0 or the script will loop continuously *
+# RUN_COMMAND   : System run command for serial or parallel runs, examples below.
+#
+#----------------------------------------------------------------------------------
+#--- BEGIN USER EDIT HERE ---------------------------------------------------------
+#----------------------------------------------------------------------------------
+
+# Set relevant paths and data information
+# This script assumes you created a directory $DOMAINPATH/postprd
+# as recommended in the users guide where UPP will output.
+export POSTEXEC=${UPP_HOME}/tests/install/bin
+
+# Specify model (WRF is the only option)
+export model="WRF"
+
+# Set input format from model and ouput format from UPP
+export inFormat="netcdfpara"
+export outFormat="grib2"
+
+# Set run command: 
+export RUN_COMMAND="${APRUN} ${NPROC} ${POSTEXEC}/upp.x "
+
+# Shouldn't need to edit these.
+# tmmark is an variable used as the file extention of the output
+# filename .GrbF is used if this variable is not set
+# COMSP is a variable used as the initial string of the output filename
+export tmmark=tm00
+export MP_SHARED_MEMORY=yes
+export MP_LABELIO=yes
+
+#----------------------------------------------------------------------
+#--- END USER EDIT ----------------------------------------------------
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+# Shouldn't need to edit below unless something goes wrong or debugging
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+# Do some checks for directory/executable existence, user input, etc.
+#----------------------------------------------------------------------
+if [ ! -d ${POSTEXEC} ]; then
+  echo "ERROR: POSTEXEC, '${POSTEXEC}', does not exist"
+  exit 1
+fi
+
+if [ ! -x ${POSTEXEC}/upp.x ]; then
+  echo "ERROR: upp.x, '${POSTEXEC}/upp.x', does not exist or is not executable."
+  exit 1
+fi
+
+# Set tag based on user defined model
+if [ $model = "WRF" ]; then
+   export tag=RAPR
+else
+   echo "${model} is not supported. Edit script to choose 'WRF' model."
+   exit
+fi
+
+if [ ${model} == "WRF" ]; then
+   if [ ${inFormat} == "netcdfpara" ]; then
+      echo "Check: You are using 'model' 'inFormat'!"
+   else
+      echo "ERROR: 'inFormat' must be 'netcdfpara' for WRF model output. Exiting... "
+      exit 1
+   fi
+fi
+
+if [[ ${outFormat} == "grib2" ]]; then
+   if [ ! -e ${txtCntrlFile} ]; then
+      echo "ERROR: 'txtCntrlFile' not found in '${txtCntrlFile}'.  Exiting... "
+      exit 1
+   fi
+else
+   echo "${outFormat} is not supported. Edit script to choose 'grib2' for 'outFormat'. Exiting... "
+fi
+ 
+if [ ! -d ${UPP_OUT} ]; then
+  echo "Creating '${UPP_OUT}'"
+  mkdir ${UPP_OUT}
+fi
+
+if [ ${incrementmin} -eq 0 ]; then
+  echo "ERROR: increment minute (incrementmin) cannot be zero. Inifinite loop will result. Please modify. Exiting..."
+  exit 1
+fi
+
+#----------------------------------------------------------------------
+# End checks of user input
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#  Begin work
+#----------------------------------------------------------------------
+
+# cd to output directory
+cd ${UPP_OUT}
+err1=$?
+if test "$err1" -ne 0; then
+    echo "ERROR: Could not 'cd' to working directory. Did you create directory: '${UPP_OUT}'?  \
+    Does '${UPP_OUT}' exist?  Exiting... "
+    exit 1
+fi
+
+# make working directory
+mkdir upp_tmp
+cd upp_tmp
+
+# For GRIB2 the code reads a flat text tile to select variables for output.
+#   The available fields are defined in post_avlbflds.xml -- while we
+#   set a link to this file for reading during runtime it is not typical
+#   for one to update this file, therefore the link goes back to the
+#   program directory - this is true for params_grib2_tbl_new also - a
+#   file which defines the GRIB2 table values
+if [[ ${outFormat} == "grib2" ]]; then
+   ln -fs ${txtCntrlFile} postxconfig-NT.txt
+   ln -fs ${UPP_HOME}/parm/post_avblflds.xml post_avblflds.xml
+   ln -fs ${UPP_HOME}/parm/params_grib2_tbl_new params_grib2_tbl_new
+fi
+
+# Link microphysics tables - code will use based on mp_physics option
+# found in data
+ln -fs ${UPP_HOME}/parm/nam_micro_lookup.dat .
+ln -fs ${UPP_HOME}/parm/hires_micro_lookup.dat .
+
+# link coefficients for crtm2 (simulated synthetic satellites)
+ln -s ${CRTM}/imgr_g11.SpcCoeff.bin imgr_g11.SpcCoeff.bin
+ln -s ${CRTM}/imgr_g12.SpcCoeff.bin imgr_g12.SpcCoeff.bin
+ln -s ${CRTM}/imgr_g13.SpcCoeff.bin imgr_g13.SpcCoeff.bin
+ln -s ${CRTM}/imgr_g15.SpcCoeff.bin imgr_g15.SpcCoeff.bin
+ln -s ${CRTM}/imgr_mt1r.SpcCoeff.bin imgr_mt1r.SpcCoeff.bin
+ln -s ${CRTM}/imgr_mt2.SpcCoeff.bin imgr_mt2.SpcCoeff.bin
+ln -s ${CRTM}/amsre_aqua.SpcCoeff.bin amsre_aqua.SpcCoeff.bin
+ln -s ${CRTM}/tmi_trmm.SpcCoeff.bin tmi_trmm.SpcCoeff.bin
+ln -s ${CRTM}/ssmi_f13.SpcCoeff.bin ssmi_f13.SpcCoeff.bin
+ln -s ${CRTM}/ssmi_f14.SpcCoeff.bin ssmi_f14.SpcCoeff.bin
+ln -s ${CRTM}/ssmi_f15.SpcCoeff.bin ssmi_f15.SpcCoeff.bin
+ln -s ${CRTM}/ssmis_f16.SpcCoeff.bin ssmis_f16.SpcCoeff.bin
+ln -s ${CRTM}/ssmis_f17.SpcCoeff.bin ssmis_f17.SpcCoeff.bin
+ln -s ${CRTM}/ssmis_f18.SpcCoeff.bin ssmis_f18.SpcCoeff.bin
+ln -s ${CRTM}/ssmis_f19.SpcCoeff.bin ssmis_f19.SpcCoeff.bin
+ln -s ${CRTM}/ssmis_f20.SpcCoeff.bin ssmis_f20.SpcCoeff.bin
+ln -s ${CRTM}/seviri_m10.SpcCoeff.bin seviri_m10.SpcCoeff.bin
+ln -s ${CRTM}/v.seviri_m10.SpcCoeff.bin v.seviri_m10.SpcCoeff.bin
+ln -s ${CRTM}/imgr_insat3d.SpcCoeff.bin imgr_insat3d.SpcCoeff.bin
+ln -s ${CRTM}/abi_gr.SpcCoeff.bin abi_gr.SpcCoeff.bin
+ln -s ${CRTM}/ahi_himawari8.SpcCoeff.bin ahi_himawari8.SpcCoeff.bin
+
+ln -s ${CRTM}/imgr_g11.TauCoeff.bin imgr_g11.TauCoeff.bin
+ln -s ${CRTM}/imgr_g12.TauCoeff.bin imgr_g12.TauCoeff.bin
+ln -s ${CRTM}/imgr_g13.TauCoeff.bin imgr_g13.TauCoeff.bin
+ln -s ${CRTM}/imgr_g15.TauCoeff.bin imgr_g15.TauCoeff.bin
+ln -s ${CRTM}/imgr_mt1r.TauCoeff.bin imgr_mt1r.TauCoeff.bin
+ln -s ${CRTM}/imgr_mt2.TauCoeff.bin imgr_mt2.TauCoeff.bin
+ln -s ${CRTM}/amsre_aqua.TauCoeff.bin amsre_aqua.TauCoeff.bin
+ln -s ${CRTM}/tmi_trmm.TauCoeff.bin tmi_trmm.TauCoeff.bin
+ln -s ${CRTM}/ssmi_f13.TauCoeff.bin ssmi_f13.TauCoeff.bin
+ln -s ${CRTM}/ssmi_f14.TauCoeff.bin ssmi_f14.TauCoeff.bin
+ln -s ${CRTM}/ssmi_f15.TauCoeff.bin ssmi_f15.TauCoeff.bin
+ln -s ${CRTM}/ssmis_f16.TauCoeff.bin ssmis_f16.TauCoeff.bin
+ln -s ${CRTM}/ssmis_f17.TauCoeff.bin ssmis_f17.TauCoeff.bin
+ln -s ${CRTM}/ssmis_f18.TauCoeff.bin ssmis_f18.TauCoeff.bin
+ln -s ${CRTM}/ssmis_f19.TauCoeff.bin ssmis_f19.TauCoeff.bin
+ln -s ${CRTM}/ssmis_f20.TauCoeff.bin ssmis_f20.TauCoeff.bin
+ln -s ${CRTM}/seviri_m10.TauCoeff.bin seviri_m10.TauCoeff.bin
+ln -s ${CRTM}/v.seviri_m10.TauCoeff.bin v.seviri_m10.TauCoeff.bin
+ln -s ${CRTM}/imgr_insat3d.TauCoeff.bin imgr_insat3d.TauCoeff.bin
+ln -s ${CRTM}/abi_gr.TauCoeff.bin abi_gr.TauCoeff.bin
+ln -s ${CRTM}/ahi_himawari8.TauCoeff.bin ahi_himawari8.TauCoeff.bin
+
+ln -s ${CRTM}/CloudCoeff.bin CloudCoeff.bin
+ln -s ${CRTM}/AerosolCoeff.bin AerosolCoeff.bin
+#ln -s ${CRTM}/EmisCoeff.bin EmisCoeff.bin
+
+ln -s ${CRTM}/ssmi_f10.SpcCoeff.bin ssmi_f10.SpcCoeff.bin
+ln -s ${CRTM}/ssmi_f10.TauCoeff.bin ssmi_f10.TauCoeff.bin
+ln -s ${CRTM}/ssmi_f11.SpcCoeff.bin ssmi_f11.SpcCoeff.bin
+ln -s ${CRTM}/ssmi_f11.TauCoeff.bin ssmi_f11.TauCoeff.bin
+ln -s ${CRTM}/FASTEM4.MWwater.EmisCoeff.bin FASTEM4.MWwater.EmisCoeff.bin
+ln -s ${CRTM}/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+ln -s ${CRTM}/FASTEM6.MWwater.EmisCoeff.bin FASTEM6.MWwater.EmisCoeff.bin
+ln -s ${CRTM}/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+ln -s ${CRTM}/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+ln -s ${CRTM}/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+ln -s ${CRTM}/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+
+#######################################################
+# 1. Run UPP
+#######################################################
+
+currentdate=$startdate
+fhr=00
+fmn=00
+
+while [ $((10#${currentdate})) -le $((10#${lastdate})) ]; do
+
+echo 'currentdate' $currentdate
+
+YYYY=`echo $currentdate | cut -c1-4`
+mm=`echo $currentdate | cut -c5-6`
+DD=`echo $currentdate | cut -c7-8`
+HH=`echo $currentdate | cut -c9-10`
+MM=`echo $currentdate | cut -c11-12`
+
+# Create model file name (inFileName)
+if [ ${model} == "WRF" ]; then
+   if [ ${inFormat} == "netcdfpara" ]; then
+      inFileName=${modelDataPath}/wrfout_d01_${YYYY}-${mm}-${DD}_${HH}_${MM}_00
+   fi
+fi
+
+# Check if the files exist
+if [[ ! -e ${inFileName} ]]; then
+   echo "ERROR: Can't find 'inFileName': ${inFileName}. Directory or file does not exist.  Exiting..."
+   echo "ERROR: Check if 'modelDataPath': ${modelDataPath} exists."
+   exit 1
+fi
+
+# Create itag based on user provided info. 
+# Output format now set by user so if-block below uses this
+# to generate the correct itag. 
+
+if [[ ${outFormat} == "grib2" ]]; then
+   if [[ ${model} == "WRF" ]]; then
+cat > itag <<EOF
+&model_inputs
+fileName='${inFileName}'
+IOFORM='${inFormat}'
+grib='${outFormat}'
+DateStr='${YYYY}-${mm}-${DD}_${HH}:${MM}:00'
+MODELNAME='${tag}'
+fileNameFlat='${txtCntrlFile}'
+fileNameFlux='${txtCntrlFile}'
+/
+&nampgb
+numx=${numx}
+/
+EOF
+   fi
+fi
+
+#-----------------------------------------------------------------------
+#   Run UPP.
+#-----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+# There are two environment variables tmmark and COMSP
+# RUN the upp.x executable. 
+#----------------------------------------------------------------------
+
+if [[ ${model} == "WRF" ]]; then
+     ${RUN_COMMAND} > upp.${currentdate}.out 2>&1
+fi
+
+#
+#----------------------------------------------------------------------
+#   End of upp job
+#----------------------------------------------------------------------
+
+# check to make sure UPP was successful
+
+if [ ${fmn} == 00 ]; then
+  suffix=${fhr}.tm00
+else
+  suffix=${fhr}.${fmn}.tm00
+fi
+
+if [[ ${model} == "WRF" ]]; then
+    ls -l WRFPRS${suffix}
+    err1=$?
+    ls -l WRFNAT${suffix}
+    err2=$?
+    ls -l WRFTWO${suffix}
+    err3=$?
+fi
+
+if [[ ${err1} -ne 0 || ${err2} -ne 0 || ${err3} -ne 0 ]]; then
+    echo 'UPP FAILED, EXITTING'
+    exit
+fi 
+
+# move UPP output files, input file, and UPP text output
+mv WRFPRS${suffix} ../wrfprs_${currentdate}.grib2
+mv WRFNAT${suffix} ../wrfnat_${currentdate}.grib2
+mv WRFTWO${suffix} ../wrftwo_${currentdate}.grib2
+mv itag ../itag.${currentdate}
+mv upp.${currentdate}.out ../
+
+# update times
+currentdate=`date '+%Y%m%d%H%M' --date="$YYYY$mm$DD $HH$MM $((10#${incrementmin})) minutes"`
+
+fmn=$((10#${fmn} + ${incrementmin}))
+if [ $fmn -eq 60 ]; then
+  fmn=00
+  fhr=$((10#${fhr} + 1))
+  if [ $fhr -lt 10 ]; then
+    fhr=0${fhr}
+  fi
+fi
+
+done
+
+# remove working directory
+cd ..
+rm -rf upp_tmp
+
+date
+echo "End of Output Job"
+echo "UPP ran successfully!"
+exit

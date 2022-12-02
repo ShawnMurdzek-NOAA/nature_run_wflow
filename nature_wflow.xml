@@ -35,18 +35,21 @@ Workflow task names.
 Switchess that control whether certain tasks are run
 -->
 <!ENTITY RUN_TASK_GEOGRID "TRUE">
-<!ENTITY RUN_TASK_UPP     "FALSE">
+<!ENTITY RUN_TASK_UPP     "TRUE">
 <!ENTITY RUN_TASK_PYGRAF  "FALSE">
 <!ENTITY RUN_TASK_PREC_NC "FALSE">
 
 <!--
 Directories and files.
 -->
-<!ENTITY SIMDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_1.5km_CONUS">
+<!ENTITY SIMDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_io102">
 <!ENTITY JOBSDIR                  "&SIMDIR;">
 <!ENTITY WPSDIR                   "&SIMDIR;/WPS">
 <!ENTITY WRFDIR                   "&SIMDIR;/WRF">
-<!ENTITY UPPDIR                   "&SIMDIR;/UPP">
+<!ENTITY UPP_OUT                  "&SIMDIR;/UPP">
+<!ENTITY WF_DIR                   "&SIMDIR;/nature_run_wflow">
+<!ENTITY UPP_DIR                  "/lfs4/BMC/wrfruc/murdzek/UPP">
+<!ENTITY CRTM                     "/lfs1/BMC/nrtrr/FIX_EXEC_MODULE/crtm/CRTM_v2.2.6">
 <!ENTITY PYGRAFDIR                "/lfs4/BMC/wrfruc/murdzek/pygraf">
 <!ENTITY GRAPHICSDIR              "&SIMDIR;/graphics">
 <!ENTITY FAKEOBS_CODE_DIR         "/lfs4/BMC/wrfruc/murdzek/py_scripts/synthetic_obs">
@@ -57,9 +60,10 @@ Directories and files.
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "&SIMDIR;/nature_run_wflow/load_modules_run_task.sh">
 
 <!--
-Nature run length
+Nature run length and output file increment (in min)
 -->
 <!ENTITY NATURE_LENGTH "00:01:00:00">
+<!ENTITY incrementmin "15">
 
 <!--
 Command used to run programs in parallel
@@ -69,11 +73,11 @@ Command used to run programs in parallel
 <!--
 Number of cores for each task
 -->
-<!ENTITY GEO_CORES  "2000">
-<!ENTITY MET_CORES  "2000">
-<!ENTITY REAL_CORES "2000">
-<!ENTITY WRF_CORES  "2000">
-<!ENTITY UPP_CORES  "1">
+<!ENTITY GEO_CORES  "1">
+<!ENTITY MET_CORES  "1">
+<!ENTITY REAL_CORES "1">
+<!ENTITY WRF_CORES  "10">
+<!ENTITY UPP_CORES  "6">
 <!ENTITY PYG_CORES  "1">
 <!ENTITY PREC_CORES "1">
 
@@ -156,9 +160,14 @@ to use for a given task.
     <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
     
     <dependency>
-      <not>
-        <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/RAP:@Y-@m-@d_@H</cyclestr></datadep>
-      </not>
+      <and>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/RAP:@Y-@m-@d_@H</cyclestr></datadep>
+        </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/FILE:@Y-@m-@d_@H</cyclestr></datadep>
+        </not>
+      </and>
     </dependency>
 
   </task>
@@ -293,24 +302,26 @@ from the command line, or read a text file with a list of file names to process.
     <cores>&UPP_CORES;</cores>
     <walltime>01:00:00</walltime>
     <jobname>&TAG;_&RUN_UPP_TN;</jobname>
-    <join><cyclestr>&UPPDIR;/&RUN_UPP_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&UPP_OUT;/&RUN_UPP_TN;_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>UPPDIR</name><value>&UPPDIR;</value></envar>
-    <envar><name>EXE_ROOT</name><value>&UPPDIR;/exec</value></envar>
-    <envar><name>DATAHOME</name><value>&WRFDIR;/run</value></envar>
-    <envar><name>MODEL</name><value>RAP</value></envar>
-    <envar><name>START_TIME</name><value>@Y@m@d@H</value></envar>
-    <envar><name>FCST_TIME</name><value>00</value></envar>
-    <envar><name>DATAWRFHOME</name><value>&WRFDIR;/run</value></envar>
-    <envar><name>STATIC_DIR</name><value>/lfs1/BMC/wrfruc/ejames/hrrrretro/HRRRv4_jan2022_faa/static/UPP</value></envar>
-    <envar><name>STATICWRF_DIR</name><value>/lfs1/BMC/wrfruc/ejames/hrrrretro/HRRRv4_jan2022_faa/static/WRF</value></envar>
+    <envar><name>UPP_OUT</name><value>&UPP_OUT;</value></envar>
+    <envar><name>UPP_HOME</name><value>&UPP_DIR;</value></envar>
+    <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
+    <envar><name>modelDataPath</name><value>&WRFDIR;/run</value></envar>
+    <envar><name>txtCntrlFile</name><value>&UPP_DIR;/parm/postxconfig-NT-hrrr.txt</value></envar>
+    <envar><name>CRTM</name><value>&CRTM;</value></envar>
+    <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&NATURE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>incrementmin</name><value>&incrementmin;</value></envar>
+    <envar><name>APRUN</name><value>&APRUN;</value></envar>
+    <envar><name>NPROC</name><value>&UPP_CORES;</value></envar>
 
     <dependency>
       <and>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfnat_hrconus_00.grib2</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&UPP_OUT;/wrfnat_@Y@m@d@H@M.grib2</cyclestr></datadep>
         </not>
-        <datadep age="00:00:10:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
+        <datadep age="00:00:15:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
         <streq><left>&RUN_TASK_UPP;</left><right>TRUE</right></streq>
       </and>
     </dependency>
