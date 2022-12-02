@@ -27,7 +27,6 @@ Workflow task names.
 <!ENTITY RUN_WRF_TN   "wrf">
 <!ENTITY RUN_UPP_TN   "upp">
 <!ENTITY PYGRAF_TN    "pygraf">
-<!ENTITY PREC_NC_TN   "precondition">
 
 <!ENTITY TAG          "NATURE_RUN">
 
@@ -37,7 +36,6 @@ Switchess that control whether certain tasks are run
 <!ENTITY RUN_TASK_GEOGRID "TRUE">
 <!ENTITY RUN_TASK_UPP     "TRUE">
 <!ENTITY RUN_TASK_PYGRAF  "FALSE">
-<!ENTITY RUN_TASK_PREC_NC "FALSE">
 
 <!--
 Directories and files.
@@ -79,7 +77,6 @@ Number of cores for each task
 <!ENTITY WRF_CORES  "10">
 <!ENTITY UPP_CORES  "6">
 <!ENTITY PYG_CORES  "1">
-<!ENTITY PREC_CORES "1">
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
@@ -281,14 +278,6 @@ to use for a given task.
     </dependency>
 
   </task>
-
-<!--
-The remaining tasks need some work. All of the tasks are currently configured to run on a single
-file. This needs to be changed (the most difficult one to change will probably be UPP). The Python 
-program called by the PREC_NC_TN task also needs to be reconfigured it can either take file names
-from the command line, or read a text file with a list of file names to process.
--->
-
 <!--
 ************************************************************************
 ************************************************************************
@@ -327,10 +316,16 @@ from the command line, or read a text file with a list of file names to process.
     </dependency>
 
   </task>
+
 <!--
 ************************************************************************
 ************************************************************************
 -->
+
+<!--
+This task still needs a little bit of work, so don't turn it on yet
+-->
+
   <task name="&PYGRAF_TN;" cycledefs="post" maxtries="3">
 
     &RSRV_DEFAULT;
@@ -352,33 +347,6 @@ from the command line, or read a text file with a list of file names to process.
       <and>
         <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfnat_hrconus_00.grib2</cyclestr></datadep>
         <streq><left>&RUN_TASK_PYGRAF;</left><right>TRUE</right></streq>
-      </and>
-    </dependency>
-
-  </task>
-<!--
-************************************************************************
-************************************************************************
--->
-  <task name="&PREC_NC_TN;" cycledefs="create_obs" maxtries="3">
-
-    &RSRV_DEFAULT;
-  
-    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_prep_nc.sh"</command>
-  
-    <cores>&PREC_CORES;</cores>
-    <walltime>01:00:00</walltime>
-    <jobname>&TAG;_&PREC_NC_TN;</jobname>
-    <join><cyclestr>&FAKEOBS_CODE_DIR;/&PREC_NC_TN;_@Y@m@d@H.log</cyclestr></join>
-
-    <envar><name>FAKEOBS_CODE_DIR</name><value>&FAKEOBS_CODE_DIR;</value></envar>
-    <envar><name>FAKEOBS_OUT_DIR</name><value>&FAKEOBS_OUT_DIR;</value></envar>
-    <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
-
-    <dependency>
-      <and>
-        <datadep age="00:00:10:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H_@M_@S</cyclestr></datadep>
-        <streq><left>&RUN_TASK_PREC_NC;</left><right>TRUE</right></streq>
       </and>
     </dependency>
 
