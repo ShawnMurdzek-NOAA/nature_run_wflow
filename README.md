@@ -6,7 +6,7 @@ Rocoto workflow for running a WRF simulation that will serve as an Observing Sys
 
 - Compiled version of WRF in WRFDIR
 - Compiled version of WPS in WPSDIR
-- Compiled version of UPP in UPPDIR
+- Compiled version of UPP in UPP_DIR/tests/install/bin
 - RAP GRIB2 output (for ICs and LBCs) in RAPDIR
 - HRRR GRIB2 output (for ICs and LBCs) in HRRRDIR
 - namelist.wps.HRRR and namelist.wps.RAP files in WPSDIR
@@ -33,4 +33,4 @@ Add the following line to run the workflow every 15 minutes:
 
 ### Other Notes:
 
-- Workflow has thus far only been tested for the geogrid, ungrib, metgrid, real, and WRF tasks
+- Workflow has thus far only been tested for the geogrid, ungrib, metgrid, real, WRF, and UPP tasks
