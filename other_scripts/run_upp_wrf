@@ -342,9 +342,11 @@ if [[ ${err1} -ne 0 || ${err2} -ne 0 || ${err3} -ne 0 ]]; then
     exit
 fi 
 
+# append wrftwo files to wrfnat and wrfprs. This is needed in order for pygraf to run properly
+cat WRFPRS${suffix} WRFTWO${suffix} > ../wrfprs_${currentdate}.grib2
+cat WRFNAT${suffix} WRFTWO${suffix} > ../wrfnat_${currentdate}.grib2
+
 # move UPP output files, input file, and UPP text output
-mv WRFPRS${suffix} ../wrfprs_${currentdate}.grib2
-mv WRFNAT${suffix} ../wrfnat_${currentdate}.grib2
 mv WRFTWO${suffix} ../wrftwo_${currentdate}.grib2
 mv itag ../itag.${currentdate}
 mv upp.${currentdate}.out ../

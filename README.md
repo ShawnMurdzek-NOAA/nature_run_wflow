@@ -11,6 +11,7 @@ Rocoto workflow for running a WRF simulation that will serve as an Observing Sys
 - HRRR GRIB2 output (for ICs and LBCs) in HRRRDIR
 - namelist.wps.HRRR and namelist.wps.RAP files in WPSDIR
 - WRFDIR contains a run directory with real.exe, wrf.exe, and namelist.input
+- Version of GSL's pygraf in PYGRAFDIR that can handle multiple output files every hour (so some modifications need to be made to the regular pygraf package)
 
 ### Using Cron
 
@@ -33,4 +34,4 @@ Add the following line to run the workflow every 15 minutes:
 
 ### Other Notes:
 
-- Workflow has thus far only been tested for the geogrid, ungrib, metgrid, real, WRF, and UPP tasks
+- All tasks within the workflow have been tested
