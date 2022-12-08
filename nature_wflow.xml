@@ -84,6 +84,7 @@ to use for a given task.
 -->
 <!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>tjet,ujet</partition>">
 <!ENTITY RSRV_WRF "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>xjet</partition>">
+<!ENTITY RSRV_UPP "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>xjet</partition>">
 
 
 ]>
@@ -284,7 +285,7 @@ to use for a given task.
 -->
   <task name="&RUN_UPP_TN;" cycledefs="post" maxtries="3">
 
-    &RSRV_DEFAULT;
+    &RSRV_UPP;
   
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_upp.sh"</command>
   
