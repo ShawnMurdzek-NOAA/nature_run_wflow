@@ -298,7 +298,7 @@ to use for a given task.
     <envar><name>UPP_HOME</name><value>&UPP_DIR;</value></envar>
     <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
     <envar><name>modelDataPath</name><value>&WRFDIR;/run</value></envar>
-    <envar><name>txtCntrlFile</name><value>&UPP_DIR;/parm/postxconfig-NT-hrrr.txt</value></envar>
+    <envar><name>txtCntrlFile</name><value>&UPP_DIR;/parm/postxconfig-NT-wrf_SSM.txt</value></envar>
     <envar><name>CRTM</name><value>&CRTM;</value></envar>
     <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>lastdate</name><value><cyclestr offset="&NATURE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
