@@ -323,10 +323,6 @@ to use for a given task.
 ************************************************************************
 -->
 
-<!--
-This task still needs a little bit of work, so don't turn it on yet
--->
-
   <task name="&PYGRAF_TN;" cycledefs="post" maxtries="3">
 
     &RSRV_DEFAULT;
