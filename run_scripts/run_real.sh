@@ -3,10 +3,10 @@
 cd ${WRFDIR}/run
 ln -sf ${WPSDIR}/met_em* .
 
-if [ ${NPROC} > 1 ]; then
+if [ ${NPROC} -gt 1 ]; then
   ${APRUN} ${NPROC} ./real.exe
   e=$?
-  if [ e==0 ]; then
+  if [ $e -eq 0 ]; then
     cd ${WPSDIR}
     tar cvf met_em.d01.tar met_em*
     rm met_em.d01.2021*
