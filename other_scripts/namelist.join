@@ -1,0 +1,146 @@
+!
+!     ##################################################################
+!     ##################################################################
+!     ######                                                      ######
+!     ######       INPUT FILE FOR JOINWRF IN NAMELIST FORMAT      ######
+!     ######                                                      ######
+!     ######                     Developed by                     ######
+!     ######     Center for Analysis and Prediction of Storms     ######
+!     ######                University of Oklahoma                ######
+!     ######                                                      ######
+!     ##################################################################
+!     ##################################################################
+!
+!
+!-----------------------------------------------------------------------
+!
+! This file contains the input parameters in namelist format for program
+! joinwrf, which joins patches of WRF netCDF files into one large piece.
+!
+! Steps to run the programs:
+!  
+!  1. Compile the program
+!
+!     Edit Makefile, choose the compiler and parallel options
+!     $> make 
+!     
+!
+!  2. Edit namelist input file - this file, namelist.join
+!
+!  3. Run the program
+!     Serial:
+!     $> joinwrf < namelist.join
+!     DM Parallel
+!     $> mpirun joinwrf < namelist.join
+!
+!-----------------------------------------------------------------------
+!
+!  Author: Yunheng Wang (04/25/2007)
+!
+!  Modification history:
+!
+!-----------------------------------------------------------------------
+!
+! WRF input information
+!
+!   dir_extd             The directory that contains the WRF data
+!                        files that are to be converted/processed.
+!   init_time_str        WRF model initial time string as:
+!                        'YYYY-MM-DD_HH:MM:SS'
+!
+!   io_form              WRF history data format
+!                      = 1, WRF internal binary format
+!                      = 2, Netcdf format
+!                      = 5, PHDF5 format
+!                      = 7, NetCDF format, using PNETCDF
+!
+!  start_time_str:          WRF history starting time string as:
+!                           'YYYY-MM-DD_HH:MM:SS'
+!  history_interval:        WRF history interval string to process as:
+!                                   'DD_HH:MM:SS'
+!                           Do not set to zero
+!  end_time_str:            WRF history ended time string.
+!
+!    NOTE: if you are converting all WRF history dumps at one time,
+!          start_time_str should be the same as init_time_str. On
+!          the other hand, if the WRF history dumps is converting
+!          one by one, start_time_str is the same as end_time_str and
+!          init_time_str should be the start time of the WRF model.
+!
+!-----------------------------------------------------------------------
+!
+  &wrfdfile
+   dir_extd               = 'WRFDIR',
+   init_time_str          = 'ITIME',
+
+   io_form                = 7,
+   grid_id                = 1,
+
+   start_time_str         = 'STIME',
+   history_interval       =         'INTERVAL',
+   end_time_str           = 'ETIME',
+ /
+
+!-----------------------------------------------------------------------
+!
+!  Patches      Specify the patches to be joined
+!  
+!    NOTE:  All patches must form a square subdomain.
+!
+!  proc_sw      No. of procs in the lower-left corner of the subdomain to be joined (joinwrf.F is not expecting this variable)
+!  proc_start_x Processor number for lower-left corner of domain (usually 0)
+!  proc_start_y Processor number for lower-left corner of domain (usually 0)
+!  nproc_x      Number of procs in the west-east direction of the subdomain. 
+!  nproc_y      Number of procs in the south-north direction of the subdomain.
+!  nproc_xin    Original nproc_x when running WRF. We want to know
+!               the configuration to get the process numbers. Must be >= 1.
+!               As far as I can tell, this is the same as nproc_x.
+!
+! This program must use the same parallel decomposition as the
+! WRF model. The very top of the model output has this information:
+! "Ntasks in X            6 , ntasks in Y           11"
+!
+!-----------------------------------------------------------------------
+
+ &patches
+   proc_start_x = 0,
+   proc_start_y = 0,
+   nproc_x = 40,
+   nproc_y = 50,
+   nproc_xin = 40,
+ /
+
+!-----------------------------------------------------------------------
+!
+! Output
+!  outdirname   Name of directory for writting output files
+!  outfiletail  File name tail to be appended. 
+!  nvarout      Number of varibles to be writen in the joined file
+!               = 0, all variables in the patch files
+!               > 0, should specify variable names in varlist below
+!  varlist      Character arrays of size nvarout containing name
+!               of variables to be written in the joined file.
+!
+!-----------------------------------------------------------------------
+
+ &output
+   outdirname = './',
+   outfiletail= '',
+   nvarout = 0,
+     varlist(1) = 'u',
+     varlist(2) = 'v',
+ /
+
+!-----------------------------------------------------------------------
+!
+! Debugging  Namelist for program debugging
+!
+!   debug = 0, no debugging messages will be written.
+!         = 1, Write important milestons
+!         = 2, Write more detailed messages
+!
+!-----------------------------------------------------------------------
+
+ &debugging
+   debug = 2,
+ /

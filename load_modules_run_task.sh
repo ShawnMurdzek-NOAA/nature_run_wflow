@@ -4,7 +4,7 @@ date
 
 task="$1"
 
-source wrf_jet.env
+source ./env/wrf_jet.env
 
 $task
 e=$?
