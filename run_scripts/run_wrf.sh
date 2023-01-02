@@ -1,6 +1,11 @@
 #!/bin/sh
 
-cd ${WRFDIR}/run
+cd ${WORKDIR}
+
+# Copy wrf.exe (namelist is already configured from running real.exe)
+cp ${WRFDIR}/run/wrf.exe .
+
+# Run wrf.exe
 if [ ${NPROC} -gt 1 ]; then
   ${APRUN} ${NPROC} ./wrf.exe
   e=$?
@@ -8,13 +13,11 @@ if [ ${NPROC} -gt 1 ]; then
   tar cvf rsl.wrf.out.tar rsl.out.*
   rm rsl.error.*
   rm rsl.out.*
-  if [ $e -eq 0 ]; then
-    tar cvf wrfinput.tar wrfinput_d01*
-    rm wrfinput_d01*
-  fi
 else
   ./wrf.exe
   e=$?
+  mv rsl.error rsl.real.error
+  mv rsl.out rsl.real.out
 fi
 
 exit $e

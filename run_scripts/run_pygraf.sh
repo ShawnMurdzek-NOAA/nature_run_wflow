@@ -8,6 +8,7 @@ fi
 cd ${PYGRAFDIR}
 
 source ./pre.sh
+export NPROC=$(( NODES * PPN ))
 
 # Pygraf is designed to operate on forecasts valid at the top of the hour. In order to handle 
 # multiple output files each hour, we will treat each output time as a 0-hour forecast with the

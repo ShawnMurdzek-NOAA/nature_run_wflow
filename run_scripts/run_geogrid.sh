@@ -1,20 +1,24 @@
 #!/bin/sh
 
-cd ${WPSDIR}
+# Create work directory
+cd ${RESTARTDIR}
+mkdir GEOGRID
+cd GEOGRID
 
-if [ ! -e namelist.wps ]; then
-  ln -sf namelist.wps.RAP namelist.wps
-fi
-
+# Run geogrid
+cp ${NAMELISTDIR}/namelist.wps.RAP ./namelist.wps
+cp ${WPSDIR}/geogrid.exe .
 if [ ${NPROC} -gt 1 ]; then
   ${APRUN} ${NPROC} ./geogrid.exe
   e=$?
-  tar cvf geogrid.log.tar geogrid.log.*
-  rm geogrid.log.1*
-  rm geogrid.log.0*
+  tar cvf geogrid.logs.tar geogrid.log.*
+  rm geogrid.log.*
 else
   ./geogrid.exe
   e=$?
 fi
+
+# Clean up
+rm geogrid.exe
 
 exit $e

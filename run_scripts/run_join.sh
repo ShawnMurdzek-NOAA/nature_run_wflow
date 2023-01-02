@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ${JOIN_OUT}
+cd ${WORKDIR}
 cp ${JOIN_HOME}/joinwrf .
 
 # Format startdate

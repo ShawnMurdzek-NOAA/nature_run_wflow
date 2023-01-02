@@ -23,11 +23,15 @@ Workflow task names.
 <!ENTITY GEOGRID_TN   "geogrid">
 <!ENTITY UNGRIB_TN    "ungrib">
 <!ENTITY METGRID_TN   "metgrid">
+<!ENTITY RUN_REAL_SPINUP_TN  "real_spinup">
 <!ENTITY RUN_REAL_TN  "real">
 <!ENTITY RUN_WRF_TN   "wrf">
 <!ENTITY RUN_JOIN_TN  "join">
+<!ENTITY RUN_CREF_TN  "cref">
 <!ENTITY RUN_UPP_TN   "upp">
 <!ENTITY PYGRAF_TN    "pygraf">
+<!ENTITY CLEAN_TN     "clean">
+<!ENTITY SAVE_TN      "save">
 
 <!ENTITY TAG          "NATURE_RUN">
 
@@ -35,37 +39,40 @@ Workflow task names.
 Switchess that control whether certain tasks are run
 -->
 <!ENTITY RUN_TASK_GEOGRID "TRUE">
-<!ENTITY RUN_TASK_JOIN    "FALSE">
+<!ENTITY RUN_TASK_JOIN    "TRUE">
 <!ENTITY RUN_TASK_UPP     "TRUE">
 <!ENTITY RUN_TASK_PYGRAF  "TRUE">
 
 <!--
 Directories and files.
 -->
-<!ENTITY SIMDIR                   "/lfs4/BMC/wrfruc/murdzek/nature_run_10km_io102">
+<!ENTITY HOME                     "/scratch1/BMC/wrfruc/murdzek">
+<!ENTITY SIMDIR                   "&HOME;/nature_run_1km_CONUS">
+<!ENTITY SRC                      "&HOME;/src">
 <!ENTITY JOBSDIR                  "&SIMDIR;">
-<!ENTITY WPSDIR                   "&SIMDIR;/WPS">
-<!ENTITY WRFDIR                   "&SIMDIR;/WRF">
-<!ENTITY JOIN_OUT                 "&SIMDIR;/JOIN">
-<!ENTITY UPP_OUT                  "&SIMDIR;/UPP">
-<!ENTITY WF_DIR                   "&SIMDIR;/nature_run_wflow">
-<!ENTITY JOIN_DIR                 "/lfs4/BMC/wrfruc/murdzek/JOINER">
-<!ENTITY UPP_DIR                  "/lfs4/BMC/wrfruc/murdzek/UPP">
-<!ENTITY CRTM                     "/lfs1/BMC/nrtrr/FIX_EXEC_MODULE/crtm/CRTM_v2.2.6">
-<!ENTITY PYGRAFDIR                "/lfs4/BMC/wrfruc/murdzek/pygraf">
-<!ENTITY GRAPHICSDIR              "&SIMDIR;/graphics">
-<!ENTITY FAKEOBS_CODE_DIR         "/lfs4/BMC/wrfruc/murdzek/py_scripts/synthetic_obs">
+<!ENTITY WPSDIR                   "&SRC;/WPS">
+<!ENTITY WRFDIR                   "&SRC;/WRF">
+<!ENTITY OUTDIR                   "&SIMDIR;/output">
+<!ENTITY WFDIR                    "&SIMDIR;/wflow">
+<!ENTITY JOINDIR                  "&SRC;/JOINER">
+<!ENTITY UPPDIR                   "&SRC;/UPP">
+<!ENTITY CRTM                     "/scratch2/BMC/rtrr/FIX_RRFS/crtm/CRTM_v2.4.0">
+<!ENTITY PYGRAFDIR                "&SRC;/pygraf">
+<!ENTITY RESTARTDIR               "&SIMDIR;/restart">
+<!ENTITY FAKEOBS_CODE_DIR         "&HOME;/py_scripts/synthetic_obs">
 <!ENTITY FAKEOBS_OUT_DIR          "&SIMDIR;/synthetic_obs">
-<!ENTITY RAPDIR                   "/lfs4/BMC/wrfruc/murdzek/RAP_data/grib">
-<!ENTITY HRRRDIR                  "/lfs4/BMC/wrfruc/murdzek/HRRR_data">
-<!ENTITY STATICDIR                "/lfs4/BMC/wrfruc/murdzek/static_data">
-<!ENTITY LOAD_MODULES_RUN_TASK_FP "&SIMDIR;/nature_run_wflow/load_modules_run_task.sh">
+<!ENTITY RAPDIR                   "&HOME;/RAP_data/grib">
+<!ENTITY HRRRDIR                  "&HOME;/HRRR_data">
+<!ENTITY STATICDIR                "&HOME;/static_data">
+<!ENTITY LOAD_MODULES_RUN_TASK_FP "&WFDIR;/load_modules_run_task.sh">
 
 <!--
-Nature run length and output file increment (in min)
+Cycle length, save frequency, output file increment (in min), and time between cycles (in min)
 -->
-<!ENTITY NATURE_LENGTH "00:01:00:00">
+<!ENTITY CYCLE_LENGTH "00:01:00:00">
+<!ENTITY SAVE_FREQ    "00:02:00:00">
 <!ENTITY incrementmin "15">
+<!ENTITY cyclemin "60">
 
 <!--
 Command used to run programs in parallel
@@ -73,34 +80,43 @@ Command used to run programs in parallel
 <!ENTITY APRUN "srun -n">
 
 <!--
+Machine being used (options: JET, HERA)
+-->
+<!ENTITY MACHINE "HERA">
+
+<!--
 Number of cores for each task
 -->
-<!ENTITY GEO_CORES  "1">
-<!ENTITY MET_CORES  "1">
-<!ENTITY REAL_CORES "1">
-<!ENTITY WRF_CORES  "10">
-<!ENTITY JOIN_CORES "6">
-<!ENTITY UPP_CORES  "6">
-<!ENTITY PYG_CORES  "4">
+<!ENTITY GEO_CORES  "2000">
+<!ENTITY MET_CORES  "2000">
+<!ENTITY REAL_CORES "2000">
+<!ENTITY WRF_CORES  "2000">
+<!ENTITY JOIN_CORES "360">
+<!ENTITY UPP_NODES  "25">
+<!ENTITY UPP_PPN    "2">
+<!ENTITY PYG_NODES  "1">
+<!ENTITY PYG_PPN    "8">
 
 <!--
 Reservation types.  Reservations specify the queue/partition and account
 to use for a given task.
 -->
-<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>tjet,ujet</partition>">
-<!ENTITY RSRV_WRF  "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>xjet</partition>">
-<!ENTITY RSRV_JOIN "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>xjet</partition>">
-<!ENTITY RSRV_UPP  "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue><partition>xjet</partition>">
+<!ENTITY RSRV_DEFAULT "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue>">
+<!ENTITY RSRV_WRF  "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue>">
+<!ENTITY RSRV_JOIN "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue>">
+<!ENTITY RSRV_UPP  "<account>&ACCOUNT;</account><queue>&QUEUE_DEFAULT;</queue>">
 
 
 ]>
-<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="1" cyclelifespan="05:00:00:00">
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="2" cyclelifespan="15:00:00:00">
 
 
-  <cycledef group="wps"> 202107242300 202107250000 02:00:00 </cycledef>
-  <cycledef group="wrf"> 202107242300 202107250000 02:00:00 </cycledef>
-  <cycledef group="post"> 202107242300 202107250000 02:00:00 </cycledef>
-  <cycledef group="create_obs"> 202107242300 202107250000 02:00:00 </cycledef>
+  <cycledef group="spinup"> 202107242300 202107250000 02:00:00 </cycledef>
+  <cycledef group="wps"> 202107242300 202107250100 01:00:00 </cycledef>
+  <cycledef group="wrf"> 202107242300 202107250100 01:00:00 </cycledef>
+  <cycledef group="post"> 202107242300 202107250100 01:00:00 </cycledef>
+  <cycledef group="save_output"> 202107242300 202107250100 02:00:00 </cycledef>
+  <cycledef group="create_obs"> 202107242300 202107250100 01:00:00 </cycledef>
 
   <log>
     <cyclestr>&JOBSDIR;/NATURE_RUN_wflow.log</cyclestr>
@@ -112,7 +128,7 @@ to use for a given task.
 ************************************************************************
 ************************************************************************
 -->
-  <task name="&GEOGRID_TN;" cycledefs="wps" maxtries="3">
+  <task name="&GEOGRID_TN;" cycledefs="spinup" maxtries="3">
 
     &RSRV_DEFAULT;
   
@@ -121,8 +137,11 @@ to use for a given task.
     <cores>&GEO_CORES;</cores>
     <walltime>00:30:00</walltime>
     <jobname>&TAG;_&GEOGRID_TN;</jobname>
-    <join><cyclestr>&WPSDIR;/&GEOGRID_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&RESTARTDIR;/GEOGRID/&GEOGRID_TN;_@Y@m@d@H@M.log</cyclestr></join>
     
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>RESTARTDIR</name><value>&RESTARTDIR;</value></envar>
+    <envar><name>NAMELISTDIR</name><value>&SIMDIR;/wrf_wps_namelists</value></envar>
     <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
     <envar><name>APRUN</name><value>&APRUN;</value></envar>
     <envar><name>NPROC</name><value>&GEO_CORES;</value></envar>
@@ -130,13 +149,10 @@ to use for a given task.
     <dependency>
       <and>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.nc</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&RESTARTDIR;/GEOGRID/geo_em.d01.nc</cyclestr></datadep>
         </not>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.nc_0000</cyclestr></datadep>
-        </not>
-        <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/geo_em.d01.tar</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&RESTARTDIR;/GEOGRID/geo_em.d01.nc_0000</cyclestr></datadep>
         </not>
         <streq><left>&RUN_TASK_GEOGRID;</left><right>TRUE</right></streq>
       </and>
@@ -156,8 +172,13 @@ to use for a given task.
     <nodes>1:ppn=1</nodes>
     <walltime>00:30:00</walltime>
     <jobname>&TAG;_&UNGRIB_TN;</jobname>
-    <join><cyclestr>&WPSDIR;/&UNGRIB_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/&UNGRIB_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS</cyclestr></value></envar>
+    <envar><name>NAMELISTDIR</name><value>&SIMDIR;/wrf_wps_namelists</value></envar>
+    <envar><name>startdate</name><value><cyclestr>@Y-@m-@d_@H:@M:@S</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y-@m-@d_@H:@M:@S</cyclestr></value></envar>
     <envar><name>RAPDIR</name><value>&RAPDIR;</value></envar>
     <envar><name>HRRRDIR</name><value>&HRRRDIR;</value></envar>
     <envar><name>STATICDIR</name><value>&STATICDIR;</value></envar>
@@ -166,10 +187,10 @@ to use for a given task.
     <dependency>
       <and>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/RAP:@Y-@m-@d_@H</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/RAP:@Y-@m-@d_@H</cyclestr></datadep>
         </not>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/FILE:@Y-@m-@d_@H</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/FILE:@Y-@m-@d_@H</cyclestr></datadep>
         </not>
       </and>
     </dependency>
@@ -188,28 +209,75 @@ to use for a given task.
     <cores>&MET_CORES;</cores>
     <walltime>00:30:00</walltime>
     <jobname>&TAG;_&METGRID_TN;</jobname>
-    <join><cyclestr>&WPSDIR;/&METGRID_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/&METGRID_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS</cyclestr></value></envar>
+    <envar><name>NAMELISTDIR</name><value>&SIMDIR;/wrf_wps_namelists</value></envar>
+    <envar><name>startdate</name><value><cyclestr>@Y-@m-@d_@H:@M:@S</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y-@m-@d_@H:@M:@S</cyclestr></value></envar>
     <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
+    <envar><name>GEODIR</name><value>&RESTARTDIR;/GEOGRID</value></envar>
     <envar><name>APRUN</name><value>&APRUN;</value></envar>
     <envar><name>NPROC</name><value>&MET_CORES;</value></envar>
     
     <dependency>
       <and>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>
         </not>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
-        </not>
-        <not>
-          <datadep age="00:00:00:10"><cyclestr>&WPSDIR;/met_em.d01.tar</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
         </not>
         <or>
-          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/geo_em.d01.nc</cyclestr></datadep>
-          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/geo_em.d01.nc_0000</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&RESTARTDIR;/GEOGRID/geo_em.d01.nc</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&RESTARTDIR;/GEOGRID/geo_em.d01.nc_0000</cyclestr></datadep>
         </or>
-        <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/RAP:@Y-@m-@d_@H</cyclestr></datadep>
+        <datadep age="00:00:10:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/RAP:@Y-@m-@d_@H</cyclestr></datadep>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&RUN_REAL_SPINUP_TN;" cycledefs="spinup" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_real.sh"</command>
+  
+    <cores>&REAL_CORES;</cores>
+    <walltime>00:30:00</walltime>
+    <jobname>&TAG;_&RUN_REAL_SPINUP_TN;</jobname>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/&RUN_REAL_SPINUP_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>SPINUP</name><value>TRUE</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF</cyclestr></value></envar>
+    <envar><name>RESTARTDIR</name><value><cyclestr>&RESTARTDIR;/@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>METDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS</cyclestr></value></envar>
+    <envar><name>NAMELISTDIR</name><value>&SIMDIR;/wrf_wps_namelists</value></envar>
+    <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M@S</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M@S</cyclestr></value></envar>
+    <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
+    <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
+    <envar><name>APRUN</name><value>&APRUN;</value></envar>
+    <envar><name>NPROC</name><value>&REAL_CORES;</value></envar>
+
+    <dependency>
+      <and>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01</cyclestr></datadep>
+        </not>
+        <not>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01_0000</cyclestr></datadep>
+        </not>
+        <or>
+          <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
+        </or>
       </and>
     </dependency>
 
@@ -227,8 +295,16 @@ to use for a given task.
     <cores>&REAL_CORES;</cores>
     <walltime>00:30:00</walltime>
     <jobname>&TAG;_&RUN_REAL_TN;</jobname>
-    <join><cyclestr>&WRFDIR;/run/&RUN_REAL_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/&RUN_REAL_TN;_@Y@m@d@H.log</cyclestr></join>
 
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>SPINUP</name><value>FALSE</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF</cyclestr></value></envar>
+    <envar><name>METDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS</cyclestr></value></envar>
+    <envar><name>NAMELISTDIR</name><value>&SIMDIR;/wrf_wps_namelists</value></envar>
+    <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M@S</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M@S</cyclestr></value></envar>
+    <envar><name>prevcyc</name><value><cyclestr offset="-&CYCLE_LENGTH;">&OUTDIR;/@Y@m@d@H@M/WRF</cyclestr></value></envar>
     <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
     <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
     <envar><name>APRUN</name><value>&APRUN;</value></envar>
@@ -237,18 +313,16 @@ to use for a given task.
     <dependency>
       <and>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfinput_d01</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01</cyclestr></datadep>
         </not>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfinput_d01_0000</cyclestr></datadep>
-        </not>
-        <not>
-          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfinput.tar</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01_0000</cyclestr></datadep>
         </not>
         <or>
-          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>
-          <datadep age="00:00:05:00"><cyclestr>&WPSDIR;/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/met_em.d01.@Y-@m-@d_@H:@M:@S.nc</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/met_em.d01.@Y-@m-@d_@H:@M:@S.nc_0000</cyclestr></datadep>
         </or>
+        <taskdep task="&RUN_WRF_TN;" cycle_offset="-&CYCLE_LENGTH;"/>
       </and>
     </dependency>
 
@@ -266,8 +340,10 @@ to use for a given task.
     <cores>&WRF_CORES;</cores>
     <walltime>02:00:00</walltime>
     <jobname>&TAG;_&RUN_WRF_TN;</jobname>
-    <join><cyclestr>&WRFDIR;/run/&RUN_WRF_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/&RUN_WRF_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF</cyclestr></value></envar>
     <envar><name>WRFDIR</name><value>&WRFDIR;</value></envar>
     <envar><name>APRUN</name><value>&APRUN;</value></envar>
     <envar><name>NPROC</name><value>&WRF_CORES;</value></envar>
@@ -275,11 +351,11 @@ to use for a given task.
     <dependency>
       <and>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H:@M:@S</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfout_d01_@Y-@m-@d_@H:@M:@S</cyclestr></datadep>
         </not>
         <or>
-          <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfinput_d01</cyclestr></datadep>
-          <datadep age="00:00:05:00"><cyclestr>&WRFDIR;/run/wrfinput_d01_0000</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01</cyclestr></datadep>
+          <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01_0000</cyclestr></datadep>
         </or>
       </and>
     </dependency>
@@ -298,24 +374,55 @@ to use for a given task.
     <cores>&JOIN_CORES;</cores>
     <walltime>01:00:00</walltime>
     <jobname>&TAG;_&RUN_JOIN_TN;</jobname>
-    <join><cyclestr>&JOIN_OUT;/&RUN_JOIN_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN/&RUN_JOIN_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
-    <envar><name>JOIN_OUT</name><value>&JOIN_OUT;</value></envar>
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN</cyclestr></value></envar>
     <envar><name>JOIN_HOME</name><value>&JOIN_DIR;</value></envar>
     <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
-    <envar><name>WRF_RUN</name><value>&WRF_DIR;/run</value></envar>
+    <envar><name>WRF_RUN</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/</cyclestr></value></envar>
     <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
-    <envar><name>lastdate</name><value><cyclestr offset="&NATURE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>incrementmin</name><value>&incrementmin;</value></envar>
     <envar><name>APRUN</name><value>&APRUN;</value></envar>
-    <envar><name>NPROC</name><value>&UPP_CORES;</value></envar>
+    <envar><name>NPROC</name><value>&JOIN_CORES;</value></envar>
 
     <dependency>
       <and>
         <not>
-          <datadep age="00:00:00:10"><cyclestr>&JOIN_OUT;/wrfout_d01_@Y-@m-@d_@H:@M:@S</cyclestr></datadep>
+          <datadep age="00:00:00:10"><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN/wrfout_d01_@Y-@m-@d_@H:@M:@S</cyclestr></datadep>
         </not>
-        <datadep age="00:00:15:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H:@M:@S_0000</cyclestr></datadep>
+        <taskdep task="&RUN_WRF_TN;"/>
+        <streq><left>&RUN_TASK_JOIN;</left><right>TRUE</right></streq>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&RUN_CREF_TN;" cycledefs="post" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_cref.sh"</command>
+  
+    <cores>1</cores>
+    <walltime>00:10:00</walltime>
+    <jobname>&TAG;_&RUN_CREF_TN;</jobname>
+    <join><cyclestr>&WORKDIR;/@Y@m@d@H@M/JOIN/&RUN_CREF_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN</cyclestr></value></envar>
+    <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
+    <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>incrementmin</name><value>&incrementmin;</value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&RUN_JOIN_TN;"/>
         <streq><left>&RUN_TASK_JOIN;</left><right>TRUE</right></streq>
       </and>
     </dependency>
@@ -331,32 +438,28 @@ to use for a given task.
   
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_upp.sh"</command>
   
-    <cores>&UPP_CORES;</cores>
+    <nodes>&UPP_NODES;:ppn=&UPP_PPN;</nodes>
     <walltime>01:00:00</walltime>
     <jobname>&TAG;_&RUN_UPP_TN;</jobname>
-    <join><cyclestr>&UPP_OUT;/&RUN_UPP_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/UPP/&RUN_UPP_TN;_@Y@m@d@H.log</cyclestr></join>
 
-    <envar><name>UPP_OUT</name><value>&UPP_OUT;</value></envar>
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/UPP</cyclestr></value></envar>
     <envar><name>UPP_HOME</name><value>&UPP_DIR;</value></envar>
     <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
-    <envar><name>modelDataPath</name><value>&WRFDIR;/run</value></envar>
+    <envar><name>modelDataPath</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN</cyclestr></value></envar>
     <envar><name>txtCntrlFile</name><value>&UPP_DIR;/parm/postxconfig-NT-wrf_SSM.txt</value></envar>
     <envar><name>CRTM</name><value>&CRTM;</value></envar>
     <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
-    <envar><name>lastdate</name><value><cyclestr offset="&NATURE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>incrementmin</name><value>&incrementmin;</value></envar>
     <envar><name>APRUN</name><value>&APRUN;</value></envar>
-    <envar><name>NPROC</name><value>&UPP_CORES;</value></envar>
+    <envar><name>NODES</name><value>&UPP_NODES;</value></envar>
+    <envar><name>PPN</name><value>&UPP_PPN;</value></envar>
 
     <dependency>
       <and>
-        <not>
-          <datadep age="00:00:00:10"><cyclestr>&UPP_OUT;/wrfnat_@Y@m@d@H@M.grib2</cyclestr></datadep>
-        </not>
-        <or>
-          <datadep age="00:00:15:00"><cyclestr offset="&NATURE_LENGTH;">&WRFDIR;/run/wrfout_d01_@Y-@m-@d_@H:@M:@S</cyclestr></datadep>
-          <datadep age="00:00:15:00"><cyclestr offset="&NATURE_LENGTH;">&JOIN_OUT;/wrfout_d01_@Y-@m-@d_@H:@M:@S</cyclestr></datadep>
-        </or>
+        <taskdep task="&RUN_CREF_TN;"/>
         <streq><left>&RUN_TASK_UPP;</left><right>TRUE</right></streq>
       </and>
     </dependency>
@@ -372,24 +475,82 @@ to use for a given task.
   
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_pygraf.sh"</command>
   
-    <cores>&PYG_CORES;</cores>
+    <nodes>&PYG_NODES;ppn=&PYG_PPN;</nodes>
     <walltime>00:20:00</walltime>
     <jobname>&TAG;_&PYGRAF_TN;</jobname>
-    <join><cyclestr>&GRAPHICSDIR;/&PYGRAF_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/graphics/&PYGRAF_TN;_@Y@m@d@H.log</cyclestr></join>
 
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/graphics</cyclestr></value></envar>
+    <envar><name>UPP_OUT</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/UPP</cyclestr></value></envar>
     <envar><name>PYGRAFDIR</name><value>&PYGRAFDIR;</value></envar>
-    <envar><name>UPP_OUT</name><value>&UPP_OUT;</value></envar>
-    <envar><name>GRAPHICSDIR</name><value>&GRAPHICSDIR;</value></envar>
     <envar><name>START</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
-    <envar><name>END</name><value><cyclestr offset="&NATURE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>END</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>STEP</name><value>&incrementmin;</value></envar>
-    <envar><name>NPROC</name><value>&PYG_CORES;</value></envar>
+    <envar><name>NODES</name><value>&PYG_NODES;</value></envar>
+    <envar><name>PPN</name><value>&PYG_PPN;</value></envar>
 
     <dependency>
       <and>
-        <datadep age="00:00:05:00"><cyclestr offset="&NATURE_LENGTH;">&UPP_OUT;/wrfnat_@Y@m@d@H@M.grib2</cyclestr></datadep>
+        <taskdep task="&RUN_UPP_TN;"/>
         <streq><left>&RUN_TASK_PYGRAF;</left><right>TRUE</right></streq>
       </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&CLEAN_TN;" cycledefs="post" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_clean.sh"</command>
+  
+    <cores>1</cores>
+    <walltime>00:20:00</walltime>
+    <jobname>&TAG;_&CLEAN_TN;</jobname>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/&CLEAN_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/</cyclestr></value></envar>
+
+    <dependency>
+      <and>
+        <taskdep task="&RUN_PYGRAF_TN;"/>
+        <taskdep task="&RUN_WRF_TN;" cycle_offset="&CYCLE_LENGTH;"/>
+      </and>
+    </dependency>
+
+  </task>
+<!--
+************************************************************************
+************************************************************************
+-->
+  <task name="&SAVE_TN;" cycledefs="save_output" maxtries="3">
+
+    &RSRV_DEFAULT;
+  
+    <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_save.sh"</command>
+  
+    <cores>1</cores>
+    <walltime>00:20:00</walltime>
+    <jobname>&TAG;_&SAVE_TN;</jobname>
+    <join><cyclestr>&RESTARTDIR;/@Y@m@d@H@M/&SAVE_TN;_@Y@m@d@H.log</cyclestr></join>
+
+    <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
+    <envar><name>WORKDIR</name><value><cyclestr>&RESTARTDIR;/@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>OUTDIR</name><value>&OUTDIR;</value></envar>
+    <envar><name>START</name><value><cyclestr offset="-&SAVE_FREQ;">@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>END</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>STEP</name><value>&cyclemin;</value></envar>
+
+    <dependency>
+      <or>
+        <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01</cyclestr></datadep>
+        <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01_0000</cyclestr></datadep>
+      </or>
     </dependency>
 
   </task>

@@ -4,7 +4,13 @@ date
 
 task="$1"
 
-source ./env/wrf_jet.env
+# Load environment
+case $MACHINE in
+"JET")
+  source ./env/wrf_jet.env;;
+"HERA")
+  source ./env/wrf_hera.env;;
+esac
 
 $task
 e=$?
