@@ -21,7 +21,7 @@ import sys
 #---------------------------------------------------------------------------------------------------
 
 fname = sys.argv[1]
-ref_name = 'COMPOSITE_REFL_10CM2'
+ref_name = 'COMPOSITE_REFL_10CM'
 
 ds = xr.open_dataset(fname)
 

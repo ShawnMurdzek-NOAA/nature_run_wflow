@@ -410,6 +410,7 @@ to use for a given task.
   
     <cores>1</cores>
     <walltime>00:10:00</walltime>
+    <memory>12G</memory>
     <jobname>&TAG;_&RUN_CREF_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN/&RUN_CREF_TN;_@Y@m@d@H.log</cyclestr></join>
 

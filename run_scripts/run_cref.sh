@@ -2,9 +2,9 @@
 
 case $MACHINE in
 "JET")
-  source ../env/py_jet.env;;
+  source ${WFDIR}/env/py_jet.env;;
 "HERA")
-  source ../env/py_hera.env;;
+  source ${WFDIR}/env/py_hera.env;;
 esac
 
 cd ${WORKDIR}
@@ -20,7 +20,7 @@ while [ ${cdate} -le ${lastdate} ]; do
   echo $t
 
   # Run Python script to append composite reflectivity to wrfout file
-  python ${WF_DIR}/other_scripts/composite_ref.py wrfout_d01_${t} 
+  python ${WFDIR}/other_scripts/composite_ref.py wrfout_d01_${t} 
   e=$?
 
   # Update current date (cdate)

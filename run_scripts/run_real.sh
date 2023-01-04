@@ -46,7 +46,8 @@ else
 fi
 
 # If not the first cycle, copy wrfout files from previous cycle
-if [ ${spinup} = "FALSE" ]; then
+echo ${SPINUP}
+if [ ${SPINUP} = "FALSE" ]; then
   echo "Using wrfout files from previous cycle"
   rm wrfinput*
   cp ${prevcyc}/wrfout_d01_${syr}-${smon}-${sday}_${shr}:${smin}:${ssec}* .

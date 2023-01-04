@@ -14,7 +14,7 @@ while [ ${cdate} -le ${lastdate} ]; do
   echo $t
 
   # Update namelist file with correct parameters
-  cp ${WF_DIR}/other_scripts/namelist.join .
+  cp ${WFDIR}/other_scripts/namelist.join .
   sed -i "s|WRFDIR|${WRF_RUN}|g" namelist.join
   sed -i "s|ITIME|${itime}|g" namelist.join
   sed -i "s|STIME|${t}|g" namelist.join
