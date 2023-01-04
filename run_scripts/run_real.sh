@@ -3,9 +3,10 @@
 cd ${WORKDIR}
 
 # Link and copy necessary files
+# I don't know exactly which files in the WRF run directory are needed, so just copy all of them
 ln -sf ${METDIR}/met_em* .
-cp ${WRFDIR}/run/real.exe .
-cp ${NAMELISTDIR}/namelist.input.
+cp ${WRFDIR}/run/* .
+cp ${NAMELISTDIR}/namelist.input .
 
 # Extract initial time
 syr=${startdate:0:4}
@@ -45,7 +46,7 @@ else
 fi
 
 # If not the first cycle, copy wrfout files from previous cycle
-if [ ${spinup} -eq "FALSE" ]; then
+if [ ${spinup} = "FALSE" ]; then
   echo "Using wrfout files from previous cycle"
   rm wrfinput*
   cp ${prevcyc}/wrfout_d01_${syr}-${smon}-${sday}_${shr}:${smin}:${ssec}* .
@@ -56,12 +57,6 @@ if [ ${spinup} -eq "FALSE" ]; then
   if [ $e2 -gt $e ]; then
     e=$e2
   fi
-else
-  # Save wrfinput and wrfbdy files
-  echo "Saving wrfinput and wrfbdy files"
-  mkdir ${RESTARTDIR}
-  cp ./wrfinput* ${RESTARTDIR}
-  cp ./wrfbdy* ${RESTARTDIR}
 fi
 
 exit $e

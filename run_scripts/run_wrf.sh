@@ -2,9 +2,6 @@
 
 cd ${WORKDIR}
 
-# Copy wrf.exe (namelist is already configured from running real.exe)
-cp ${WRFDIR}/run/wrf.exe .
-
 # Run wrf.exe
 if [ ${NPROC} -gt 1 ]; then
   ${APRUN} ${NPROC} ./wrf.exe

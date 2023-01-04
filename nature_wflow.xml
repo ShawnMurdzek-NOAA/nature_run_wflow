@@ -47,7 +47,7 @@ Switchess that control whether certain tasks are run
 Directories and files.
 -->
 <!ENTITY HOME                     "/scratch1/BMC/wrfruc/murdzek">
-<!ENTITY SIMDIR                   "&HOME;/nature_run_1km_CONUS">
+<!ENTITY SIMDIR                   "&HOME;/nature_run_1km_3hr">
 <!ENTITY SRC                      "&HOME;/src">
 <!ENTITY JOBSDIR                  "&SIMDIR;">
 <!ENTITY WPSDIR                   "&SRC;/WPS">
@@ -135,7 +135,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_geogrid.sh"</command>
   
     <cores>&GEO_CORES;</cores>
-    <walltime>00:30:00</walltime>
+    <walltime>00:10:00</walltime>
     <jobname>&TAG;_&GEOGRID_TN;</jobname>
     <join><cyclestr>&RESTARTDIR;/GEOGRID/&GEOGRID_TN;_@Y@m@d@H@M.log</cyclestr></join>
     
@@ -170,7 +170,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_ungrib.sh"</command>
   
     <nodes>1:ppn=1</nodes>
-    <walltime>00:30:00</walltime>
+    <walltime>00:10:00</walltime>
     <jobname>&TAG;_&UNGRIB_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/&UNGRIB_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
@@ -207,7 +207,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_metgrid.sh"</command>
   
     <cores>&MET_CORES;</cores>
-    <walltime>00:30:00</walltime>
+    <walltime>00:10:00</walltime>
     <jobname>&TAG;_&METGRID_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/&METGRID_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
@@ -233,7 +233,7 @@ to use for a given task.
           <datadep age="00:00:05:00"><cyclestr>&RESTARTDIR;/GEOGRID/geo_em.d01.nc</cyclestr></datadep>
           <datadep age="00:00:05:00"><cyclestr>&RESTARTDIR;/GEOGRID/geo_em.d01.nc_0000</cyclestr></datadep>
         </or>
-        <datadep age="00:00:10:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/RAP:@Y-@m-@d_@H</cyclestr></datadep>
+        <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/RAP:@Y-@m-@d_@H</cyclestr></datadep>
       </and>
     </dependency>
 
@@ -372,14 +372,14 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_join.sh"</command>
   
     <cores>&JOIN_CORES;</cores>
-    <walltime>01:00:00</walltime>
+    <walltime>04:00:00</walltime>
     <jobname>&TAG;_&RUN_JOIN_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN/&RUN_JOIN_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
     <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
     <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN</cyclestr></value></envar>
-    <envar><name>JOIN_HOME</name><value>&JOIN_DIR;</value></envar>
-    <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
+    <envar><name>JOIN_HOME</name><value>&JOINDIR;</value></envar>
+    <envar><name>WFDIR</name><value>&WFDIR;</value></envar>
     <envar><name>WRF_RUN</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/</cyclestr></value></envar>
     <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
@@ -411,11 +411,11 @@ to use for a given task.
     <cores>1</cores>
     <walltime>00:10:00</walltime>
     <jobname>&TAG;_&RUN_CREF_TN;</jobname>
-    <join><cyclestr>&WORKDIR;/@Y@m@d@H@M/JOIN/&RUN_CREF_TN;_@Y@m@d@H.log</cyclestr></join>
+    <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN/&RUN_CREF_TN;_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
     <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN</cyclestr></value></envar>
-    <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
+    <envar><name>WFDIR</name><value>&WFDIR;</value></envar>
     <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>incrementmin</name><value>&incrementmin;</value></envar>
@@ -439,16 +439,16 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_upp.sh"</command>
   
     <nodes>&UPP_NODES;:ppn=&UPP_PPN;</nodes>
-    <walltime>01:00:00</walltime>
+    <walltime>01:30:00</walltime>
     <jobname>&TAG;_&RUN_UPP_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/UPP/&RUN_UPP_TN;_@Y@m@d@H.log</cyclestr></join>
 
     <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
     <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/UPP</cyclestr></value></envar>
-    <envar><name>UPP_HOME</name><value>&UPP_DIR;</value></envar>
-    <envar><name>WF_DIR</name><value>&WF_DIR;</value></envar>
+    <envar><name>UPP_HOME</name><value>&UPPDIR;</value></envar>
+    <envar><name>WFDIR</name><value>&WFDIR;</value></envar>
     <envar><name>modelDataPath</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/JOIN</cyclestr></value></envar>
-    <envar><name>txtCntrlFile</name><value>&UPP_DIR;/parm/postxconfig-NT-wrf_SSM.txt</value></envar>
+    <envar><name>txtCntrlFile</name><value>&UPPDIR;/parm/postxconfig-NT-wrf_SSM.txt</value></envar>
     <envar><name>CRTM</name><value>&CRTM;</value></envar>
     <envar><name>startdate</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
@@ -475,8 +475,8 @@ to use for a given task.
   
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_pygraf.sh"</command>
   
-    <nodes>&PYG_NODES;ppn=&PYG_PPN;</nodes>
-    <walltime>00:20:00</walltime>
+    <nodes>&PYG_NODES;:ppn=&PYG_PPN;</nodes>
+    <walltime>02:00:00</walltime>
     <jobname>&TAG;_&PYGRAF_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/graphics/&PYGRAF_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -509,7 +509,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_clean.sh"</command>
   
     <cores>1</cores>
-    <walltime>00:20:00</walltime>
+    <walltime>00:10:00</walltime>
     <jobname>&TAG;_&CLEAN_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/&CLEAN_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -518,7 +518,7 @@ to use for a given task.
 
     <dependency>
       <and>
-        <taskdep task="&RUN_PYGRAF_TN;"/>
+        <taskdep task="&PYGRAF_TN;"/>
         <taskdep task="&RUN_WRF_TN;" cycle_offset="&CYCLE_LENGTH;"/>
       </and>
     </dependency>
@@ -535,7 +535,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_save.sh"</command>
   
     <cores>1</cores>
-    <walltime>00:20:00</walltime>
+    <walltime>00:10:00</walltime>
     <jobname>&TAG;_&SAVE_TN;</jobname>
     <join><cyclestr>&RESTARTDIR;/@Y@m@d@H@M/&SAVE_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -547,10 +547,7 @@ to use for a given task.
     <envar><name>STEP</name><value>&cyclemin;</value></envar>
 
     <dependency>
-      <or>
-        <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01</cyclestr></datadep>
-        <datadep age="00:00:05:00"><cyclestr>&OUTDIR;/@Y@m@d@H@M/WRF/wrfinput_d01_0000</cyclestr></datadep>
-      </or>
+      <taskdep task="&RUN_WRF_TN;"/>
     </dependency>
 
   </task>

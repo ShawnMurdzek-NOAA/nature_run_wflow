@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ${OUTDIR}
+cd ${WORKDIR}
 
 # Link or copy required files
 ln -sf ${GEODIR}/geo_em* .

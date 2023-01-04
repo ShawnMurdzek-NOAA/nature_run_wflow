@@ -1,9 +1,7 @@
 #!/bin/sh
 
 # Create work directory
-cd ${RESTARTDIR}
-mkdir GEOGRID
-cd GEOGRID
+cd ${RESTARTDIR}/GEOGRID
 
 # Run geogrid
 cp ${NAMELISTDIR}/namelist.wps.RAP ./namelist.wps

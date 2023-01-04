@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Create work directory
-mkdir ${WORKDIR}
 cd ${WORKDIR}
 
 # Copy executables
