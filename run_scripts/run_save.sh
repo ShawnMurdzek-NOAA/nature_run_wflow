@@ -4,6 +4,9 @@
 cp ${OUTDIR}/${END}/WRF/wrfinput* ${WORKDIR}/
 cp ${OUTDIR}/${END}/WRF/wrfbdy* ${WORKDIR}/
 
+tar cvzf wrfinput_${END}.tar.gz wrfinput_d01*
+rm wrfinput_d01*
+
 # Delete wrfinput and wrfbdy files generated since last time this script was run
 CURRENT=${START}
 while [ ${CURRENT} -le ${END} ]; do

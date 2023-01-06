@@ -13,8 +13,8 @@ if [ ${NPROC} -gt 1 ]; then
 else
   ./wrf.exe
   e=$?
-  mv rsl.error rsl.real.error
-  mv rsl.out rsl.real.out
+  mv rsl.error rsl.wrf.error
+  mv rsl.out rsl.wrf.out
 fi
 
 exit $e

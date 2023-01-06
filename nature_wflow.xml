@@ -69,6 +69,10 @@ Directories and files.
 
 <!--
 Cycle length, save frequency, output file increment (in min), and time between cycles (in min)
+
+NOTE: If CYCLE_LENGTH is changed, the WRF namelist also needs to be updated to reflect the correct
+simulation length as well as the correct interval that input/LBC data is being fed in. I like cycling
+every hour b/c that means new LBC is available every hour.
 -->
 <!ENTITY CYCLE_LENGTH "00:01:00:00">
 <!ENTITY SAVE_FREQ    "00:02:00:00">
@@ -110,7 +114,7 @@ to use for a given task.
 
 
 ]>
-<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="2" cyclelifespan="15:00:00:00">
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="3" cyclelifespan="15:00:00:00">
 
 
   <cycledef group="spinup"> 202107242300 202107250000 02:00:00 </cycledef>
@@ -512,7 +516,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_pygraf.sh"</command>
   
     <nodes>&PYG_NODES;:ppn=&PYG_PPN;</nodes>
-    <walltime>02:00:00</walltime>
+    <walltime>03:00:00</walltime>
     <jobname>&TAG;_&PYGRAF_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/graphics/&PYGRAF_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -552,6 +556,10 @@ to use for a given task.
     <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
     <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/</cyclestr></value></envar>
 
+    <!-- 
+    Don't delete wrfout files until next WRF has finished running in the next cycle, b/c
+    the wrfout files from this cycle are needed to start WRF in the next cycle.
+    -->
     <dependency>
       <and>
         <taskdep task="&PYGRAF_TN;"/>
@@ -582,8 +590,12 @@ to use for a given task.
     <envar><name>END</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>STEP</name><value>&cyclemin;</value></envar>
 
+    <!-- 
+    Don't delete wrfinput files until necessary fields have been copied to the final 
+    wrfout files, which are needed to start the next cycle.
+    -->
     <dependency>
-      <taskdep task="&RUN_WRF_TN;"/>
+      <taskdep task="&APPEND_WRFOUT_TN;"/>
     </dependency>
 
   </task>
