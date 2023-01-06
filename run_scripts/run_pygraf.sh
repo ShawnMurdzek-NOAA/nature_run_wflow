@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ ! -d ${GRAPHICSDIR} ]; then
+if [ ! -d ${WORKDIR} ]; then
   echo "creating pygraf ouput directory"
-  mkdir ${GRAPHICSDIR}
+  mkdir ${WORKDIR}
 fi
 
 cd ${PYGRAFDIR}
@@ -29,7 +29,7 @@ while [ ${CURRENT} -le ${END} ]; do
            --images ./image_lists/wrfnat.yml hourly \
            -m "Nature Run" \
            -n ${NPROC} \
-           -o ${GRAPHICSDIR} \
+           -o ${WORKDIR} \
            -s ${CURRENT} \
            --tiles full
 
@@ -42,7 +42,7 @@ while [ ${CURRENT} -le ${END} ]; do
            --images ./image_lists/wrfprs.yml hourly \
            -m "Nature Run" \
            -n ${NPROC} \
-           -o ${GRAPHICSDIR} \
+           -o ${WORKDIR} \
            -s ${CURRENT} \
            --tiles full
 
@@ -55,14 +55,14 @@ while [ ${CURRENT} -le ${END} ]; do
            --max_plev 100 \
            -m "Nature Run" \
            -n ${NPROC} \
-           -o ${GRAPHICSDIR} \
+           -o ${WORKDIR} \
            -s ${CURRENT} \
            --sites ./static/sites.txt
 
   e=$?
 
   # Zip up graphics
-  cd ${GRAPHICSDIR}
+  cd ${WORKDIR}
   tar cvzf graphics_${CURRENT}.tar.gz ./${CURRENT}00/*
   rm -rf ${CURRENT}00
 

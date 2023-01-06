@@ -46,7 +46,7 @@ set -x
 #
 #----------------------------------------------------------------------------------
 # TOP_DIR       : Top level directory for building and running UPP
-# UPP_OUT       : Directory to save UPP output
+# WORKDIR       : Directory to save UPP output
 # UPP_HOME      : Location of the UPP directory
 # POSTEXEC      : Location of the UPP executable
 # modelDataPath : Location of the model output data files to be post-processed
@@ -138,9 +138,9 @@ else
    echo "${outFormat} is not supported. Edit script to choose 'grib2' for 'outFormat'. Exiting... "
 fi
  
-if [ ! -d ${UPP_OUT} ]; then
-  echo "Creating '${UPP_OUT}'"
-  mkdir ${UPP_OUT}
+if [ ! -d ${WORKDIR} ]; then
+  echo "Creating '${WORKDIR}'"
+  mkdir ${WORKDIR}
 fi
 
 if [ ${incrementmin} -eq 0 ]; then
@@ -157,11 +157,11 @@ fi
 #----------------------------------------------------------------------
 
 # cd to output directory
-cd ${UPP_OUT}
+cd ${WORKDIR}
 err1=$?
 if test "$err1" -ne 0; then
-    echo "ERROR: Could not 'cd' to working directory. Did you create directory: '${UPP_OUT}'?  \
-    Does '${UPP_OUT}' exist?  Exiting... "
+    echo "ERROR: Could not 'cd' to working directory. Did you create directory: '${WORKDIR}'?  \
+    Does '${WORKDIR}' exist?  Exiting... "
     exit 1
 fi
 
@@ -268,7 +268,7 @@ MM=`echo $currentdate | cut -c11-12`
 # Create model file name (inFileName)
 if [ ${model} == "WRF" ]; then
    if [ ${inFormat} == "netcdfpara" ]; then
-      inFileName=${modelDataPath}/wrfout_d01_${YYYY}-${mm}-${DD}_${HH}_${MM}_00
+      inFileName=${modelDataPath}/wrfout_d01_${YYYY}-${mm}-${DD}_${HH}:${MM}:00
    fi
 fi
 
@@ -339,7 +339,7 @@ fi
 
 if [[ ${err1} -ne 0 || ${err2} -ne 0 || ${err3} -ne 0 ]]; then
     echo 'UPP FAILED, EXITTING'
-    exit
+    exit 1
 fi 
 
 # append wrftwo files to wrfnat and wrfprs. This is needed in order for pygraf to run properly
