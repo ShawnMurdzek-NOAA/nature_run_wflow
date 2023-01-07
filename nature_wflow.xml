@@ -579,7 +579,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_save.sh"</command>
   
     <cores>1</cores>
-    <walltime>00:10:00</walltime>
+    <walltime>00:40:00</walltime>
     <jobname>&TAG;_&SAVE_TN;</jobname>
     <join><cyclestr>&RESTARTDIR;/@Y@m@d@H@M/&SAVE_TN;_@Y@m@d@H.log</cyclestr></join>
 
