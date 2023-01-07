@@ -1,8 +1,10 @@
 #!/bin/sh
 
+cd ${WORKDIR}
+
 # Copy wrfinput and wrfbdy files
-cp ${OUTDIR}/${END}/WRF/wrfinput* ${WORKDIR}/
-cp ${OUTDIR}/${END}/WRF/wrfbdy* ${WORKDIR}/
+cp ${OUTDIR}/${END}/WRF/wrfinput* .
+cp ${OUTDIR}/${END}/WRF/wrfbdy* .
 
 tar cvzf wrfinput_${END}.tar.gz wrfinput_d01*
 rm wrfinput_d01*
