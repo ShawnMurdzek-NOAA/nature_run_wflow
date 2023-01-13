@@ -66,6 +66,7 @@ Directories and files.
 <!ENTITY HRRRDIR                  "&HOME;/HRRR_data">
 <!ENTITY STATICDIR                "&HOME;/static_data">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "&WFDIR;/load_modules_run_task.sh">
+<!ENTITY HPSSDIR                  "/BMC/wrfruc/5year/murdzek/springNR">
 
 <!--
 Cycle length, save frequency, output file increment (in min), and time between cycles (in min)
@@ -555,6 +556,10 @@ to use for a given task.
 
     <envar><name>MACHINE</name><value>&MACHINE;</value></envar>
     <envar><name>WORKDIR</name><value><cyclestr>&OUTDIR;/@Y@m@d@H@M/</cyclestr></value></envar>
+    <envar><name>HPSSDIR</name><value><cyclestr>&HPSSDIR;/@Y@m@d@H@M/</cyclestr></value></envar>
+    <envar><name>START</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>END</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
+    <envar><name>STEP</name><value>&cyclemin;</value></envar>
 
     <!-- 
     Don't delete wrfout files until next WRF has finished running in the next cycle, b/c
