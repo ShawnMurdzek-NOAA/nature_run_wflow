@@ -48,7 +48,7 @@ Switchess that control whether certain tasks are run
 Directories and files.
 -->
 <!ENTITY HOME                     "/scratch1/BMC/wrfruc/murdzek">
-<!ENTITY SIMDIR                   "&HOME;/nature_run_1km_3hr">
+<!ENTITY SIMDIR                   "&HOME;/nature_run_spring">
 <!ENTITY SRC                      "&HOME;/src">
 <!ENTITY JOBSDIR                  "&SIMDIR;">
 <!ENTITY WPSDIR                   "&SRC;/WPS">
@@ -76,7 +76,7 @@ simulation length as well as the correct interval that input/LBC data is being f
 every hour b/c that means new LBC is available every hour.
 -->
 <!ENTITY CYCLE_LENGTH "00:01:00:00">
-<!ENTITY SAVE_FREQ    "00:02:00:00">
+<!ENTITY SAVE_FREQ    "00:06:00:00">
 <!ENTITY incrementmin "15">
 <!ENTITY cyclemin "60">
 
@@ -101,7 +101,7 @@ Number of cores for each task
 <!ENTITY APPEND_CORES "20">
 <!ENTITY UPP_NODES    "50">
 <!ENTITY UPP_PPN      "1">
-<!ENTITY PYG_NODES    "1">
+<!ENTITY PYG_NODES    "2">
 <!ENTITY PYG_PPN      "8">
 
 <!--
@@ -118,12 +118,12 @@ to use for a given task.
 <workflow realtime="F" scheduler="&SCHED;" cyclethrottle="3" cyclelifespan="15:00:00:00">
 
 
-  <cycledef group="spinup"> 202107242300 202107250000 02:00:00 </cycledef>
-  <cycledef group="wps"> 202107242300 202107250100 01:00:00 </cycledef>
-  <cycledef group="wrf"> 202107242300 202107250100 01:00:00 </cycledef>
-  <cycledef group="post"> 202107242300 202107250100 01:00:00 </cycledef>
-  <cycledef group="save_output"> 202107242300 202107250100 02:00:00 </cycledef>
-  <cycledef group="create_obs"> 202107242300 202107250100 01:00:00 </cycledef>
+  <cycledef group="spinup"> 202204291200 202204291300 02:00:00 </cycledef>
+  <cycledef group="wps"> 202204291200 202204302300 01:00:00 </cycledef>
+  <cycledef group="wrf"> 202204291200 202204302300 01:00:00 </cycledef>
+  <cycledef group="post"> 202204291200 202204302300 01:00:00 </cycledef>
+  <cycledef group="save_output"> 202204291200 202204302300 06:00:00 </cycledef>
+  <cycledef group="create_obs"> 202204291200 202204302300 01:00:00 </cycledef>
 
   <log>
     <cyclestr>&JOBSDIR;/NATURE_RUN_wflow.log</cyclestr>
@@ -550,7 +550,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_clean.sh"</command>
   
     <cores>1</cores>
-    <walltime>00:10:00</walltime>
+    <walltime>04:00:00</walltime>
     <jobname>&TAG;_&CLEAN_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/&CLEAN_TN;_@Y@m@d@H.log</cyclestr></join>
 
@@ -559,7 +559,7 @@ to use for a given task.
     <envar><name>HPSSDIR</name><value><cyclestr>&HPSSDIR;/@Y@m@d@H@M/</cyclestr></value></envar>
     <envar><name>START</name><value><cyclestr>@Y@m@d@H@M</cyclestr></value></envar>
     <envar><name>END</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y@m@d@H@M</cyclestr></value></envar>
-    <envar><name>STEP</name><value>&cyclemin;</value></envar>
+    <envar><name>STEP</name><value>&incrementmin;</value></envar>
 
     <!-- 
     Don't delete wrfout files until next WRF has finished running in the next cycle, b/c

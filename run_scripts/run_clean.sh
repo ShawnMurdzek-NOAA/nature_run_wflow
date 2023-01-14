@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd ${WORKDIR}
+
 # Geogrid
 rm ${WORKDIR}/WPS/geo_em*
 
@@ -21,12 +23,16 @@ module load hpss
 hsi mkdir ${HPSSDIR}
 CURRENT=${START}
 while [ ${CURRENT} -le ${END} ]; do
-  echo "saving wrfout files for ${CURRENT}"
-
   fname=wrfout_${CURRENT}.tar.gz
-  tar cvzf ${fname} ${WORKDIR}/WRF/wrfout*
-  rm ${WORKDIR}/WRF/wrfout_d01*
-  hsi put ${WORKDIR}/WRF/${fname} ${HPSSDIR}/${fname}
+  t=${CURRENT::4}-${CURRENT:4:2}-${CURRENT:6:2}_${CURRENT:8:2}:${CURRENT:10:2}:00
+  echo "saving wrfout files for ${t}"
+  
+  tar cvzf ${fname} ${WORKDIR}/WRF/wrfout_d01_${t}*
+  e=$?
+  if [ $e -gt 0 ]; then
+    rm ${WORKDIR}/WRF/wrfout_d01_${t}*
+  fi
+  hsi put ${WORKDIR}/WRF/${fname} : ${HPSSDIR}/${fname}
  
   d=${CURRENT::8}
   t=${CURRENT:8:12}
