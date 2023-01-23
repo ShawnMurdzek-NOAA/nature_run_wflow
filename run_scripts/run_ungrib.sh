@@ -14,7 +14,7 @@ if [ -e ${NAMELISTDIR}/namelist.wps.HRRR ]; then
   sed -i "s|END|${lastdate}|g" namelist.wps.HRRR
   ln -sf namelist.wps.HRRR namelist.wps
   ./link_grib.csh ${HRRRDIR}/*
-  ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM.SFC Vtable
+  ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   rm GRIB*
 

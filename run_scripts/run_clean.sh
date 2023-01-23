@@ -29,7 +29,7 @@ while [ ${CURRENT} -le ${END} ]; do
   
   tar cvzf ${fname} ${WORKDIR}/WRF/wrfout_d01_${t}*
   e=$?
-  if [ $e -gt 0 ]; then
+  if [ $e -lt 1 ]; then
     rm ${WORKDIR}/WRF/wrfout_d01_${t}*
   fi
   hsi put ${WORKDIR}/WRF/${fname} : ${HPSSDIR}/${fname}
