@@ -115,7 +115,7 @@ to use for a given task.
 
 
 ]>
-<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="5" cyclelifespan="15:00:00:00">
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="6" cyclelifespan="15:00:00:00">
 
 
   <cycledef group="spinup"> 202204291200 202204291300 02:00:00 </cycledef>
