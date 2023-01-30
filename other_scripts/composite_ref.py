@@ -26,8 +26,11 @@ ref_name = 'COMPOSITE_REFL_10CM'
 ds = xr.open_dataset(fname)
 
 new_ds = xr.Dataset(data_vars={ref_name:ds['REFL_10CM'].max(dim=['bottom_top'])})
-new_ds[ref_name].attrs['units'] = 'dBZ'
+new_ds[ref_name].attrs['FieldType'] = 104
+new_ds[ref_name].attrs['MemoryOrder'] = 'XY'
 new_ds[ref_name].attrs['description'] = 'Composite radar reflectivity (lamda = 10 cm)'
+new_ds[ref_name].attrs['units'] = 'dBZ'
+new_ds[ref_name].attrs['stagger'] = ''
 
 ds.close()
 new_ds.to_netcdf(fname, mode='a')
