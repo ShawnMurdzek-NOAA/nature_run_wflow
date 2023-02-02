@@ -47,10 +47,10 @@ fields = ['LANDUSEF', 'SOILCTOP', 'SOILCBOT', 'LAKE_DEPTH',
 
 # Print inputs
 print()
-print('nfiles = %d', nfiles)
-print('time = %s', time)
-print('path = %s', path)
-print('nproc = %d', nproc)
+print('nfiles = %d' % nfiles)
+print('time = %s' % time)
+print('path = %s' % path)
+print('nproc = %d' % nproc)
 print()
 
 def append_data(i, nfiles=nfiles, time=time, path=path, fields=fields):
