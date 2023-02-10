@@ -7,7 +7,7 @@ Rocoto workflow for running a WRF simulation that will serve as an Observing Sys
 - Compiled version of WRF in WRFDIR
 - Compiled version of WPS in WPSDIR
 - Compiled version of UPP in UPP_DIR/tests/install/bin
-- RAP GRIB2 output (for ICs and LBCs) in RAPDIR
+- RAP GRIB2 output (for ICs and LBCs) in RAPDIR. RAP GRIB2 output should be further organized into subdirectories in RAPDIR based on the day the RAP was initialized. These subdirectories need to follow the naming convention `YYYYmmdd`.
 - HRRR GRIB2 output (for ICs and LBCs) in HRRRDIR
 - namelist.wps.HRRR and namelist.wps.RAP files in WPSDIR
 - WRFDIR contains a run directory with real.exe, wrf.exe, and namelist.input

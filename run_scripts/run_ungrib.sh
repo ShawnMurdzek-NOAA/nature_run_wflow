@@ -9,6 +9,8 @@ cp ${WPSDIR}/ungrib.exe .
 
 if [ -e ${NAMELISTDIR}/namelist.wps.HRRR ]; then
 
+  # Only have HRRR data for ICs. Give priority to HRRR data in ungrib
+  # program, then backfill with RAP data
   cp ${NAMELISTDIR}/namelist.wps.HRRR .
   sed -i "s|START|${startdate}|g" namelist.wps.HRRR
   sed -i "s|END|${lastdate}|g" namelist.wps.HRRR
@@ -18,6 +20,8 @@ if [ -e ${NAMELISTDIR}/namelist.wps.HRRR ]; then
   ./ungrib.exe
   rm GRIB*
 
+  # Only grab RAP data for the day the cycle is starting (RAPDIR1) and
+  # the next day (RAPDIR2) otherwise ungrib takes too long to run
   cp ${NAMELISTDIR}/namelist.wps.RAP .
   sed -i "s|START|${startdate}|g" namelist.wps.RAP
   sed -i "s|END|${lastdate}|g" namelist.wps.RAP
