@@ -22,7 +22,8 @@ if [ -e ${NAMELISTDIR}/namelist.wps.HRRR ]; then
   sed -i "s|START|${startdate}|g" namelist.wps.RAP
   sed -i "s|END|${lastdate}|g" namelist.wps.RAP
   ln -sf namelist.wps.RAP namelist.wps
-  ./link_grib.csh ${RAPDIR}/*
+  ./link_grib.csh ${RAPDIR1}/*
+  ./link_grib.csh ${RAPDIR2}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   e=$?
@@ -33,7 +34,8 @@ elif [ -e ${NAMELISTDIR}/namelist.wps.RAP ]; then
   sed -i "s|START|${startdate}|g" namelist.wps.RAP
   sed -i "s|END|${lastdate}|g" namelist.wps.RAP
   ln -sf namelist.wps.RAP namelist.wps
-  ./link_grib.csh ${RAPDIR}/*
+  ./link_grib.csh ${RAPDIR1}/*
+  ./link_grib.csh ${RAPDIR2}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   e=$?
@@ -43,7 +45,8 @@ else
   cp ${NAMELISTDIR}/namelist.wps .
   sed -i "s|START|${startdate}|g" namelist.wps
   sed -i "s|END|${lastdate}|g" namelist.wps
-  ./link_grib.csh ${RAPDIR}/*
+  ./link_grib.csh ${RAPDIR1}/*
+  ./link_grib.csh ${RAPDIR2}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   e=$?

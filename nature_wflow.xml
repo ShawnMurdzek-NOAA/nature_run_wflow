@@ -48,7 +48,7 @@ Switchess that control whether certain tasks are run
 Directories and files.
 -->
 <!ENTITY HOME                     "/scratch1/BMC/wrfruc/murdzek">
-<!ENTITY SIMDIR                   "&HOME;/nature_run_spring_v2">
+<!ENTITY SIMDIR                   "&HOME;/nature_run_spring">
 <!ENTITY SRC                      "&HOME;/src">
 <!ENTITY JOBSDIR                  "&SIMDIR;">
 <!ENTITY WPSDIR                   "&SRC;/WPS">
@@ -114,15 +114,15 @@ to use for a given task.
 
 
 ]>
-<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="6" cyclelifespan="15:00:00:00">
+<workflow realtime="F" scheduler="&SCHED;" cyclethrottle="6" cyclelifespan="30:00:00:00">
 
 
   <cycledef group="spinup"> 202204291200 202204291300 02:00:00 </cycledef>
-  <cycledef group="wps"> 202204291200 202204302300 01:00:00 </cycledef>
-  <cycledef group="wrf"> 202204291200 202204302300 01:00:00 </cycledef>
-  <cycledef group="post"> 202204291200 202204302300 01:00:00 </cycledef>
-  <cycledef group="save_output"> 202204291200 202204302300 06:00:00 </cycledef>
-  <cycledef group="create_obs"> 202204291200 202204302300 01:00:00 </cycledef>
+  <cycledef group="wps"> 202204291200 202205061100 01:00:00 </cycledef>
+  <cycledef group="wrf"> 202204291200 202205061100 01:00:00 </cycledef>
+  <cycledef group="post"> 202204291200 202205061100 01:00:00 </cycledef>
+  <cycledef group="save_output"> 202204291200 202205061100 06:00:00 </cycledef>
+  <cycledef group="create_obs"> 202204291200 202205061100 01:00:00 </cycledef>
 
   <log>
     <cyclestr>&JOBSDIR;/NATURE_RUN_wflow.log</cyclestr>
@@ -176,7 +176,7 @@ to use for a given task.
     <command>&LOAD_MODULES_RUN_TASK_FP; "bash run_scripts/run_ungrib.sh"</command>
   
     <nodes>1:ppn=1</nodes>
-    <walltime>00:10:00</walltime>
+    <walltime>00:30:00</walltime>
     <jobname>&TAG;_&UNGRIB_TN;</jobname>
     <join><cyclestr>&OUTDIR;/@Y@m@d@H@M/WPS/&UNGRIB_TN;_@Y@m@d@H@M.log</cyclestr></join>
 
@@ -185,7 +185,8 @@ to use for a given task.
     <envar><name>NAMELISTDIR</name><value>&SIMDIR;/wrf_wps_namelists</value></envar>
     <envar><name>startdate</name><value><cyclestr>@Y-@m-@d_@H:@M:@S</cyclestr></value></envar>
     <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y-@m-@d_@H:@M:@S</cyclestr></value></envar>
-    <envar><name>RAPDIR</name><value>&RAPDIR;</value></envar>
+    <envar><name>RAPDIR1</name><value><cyclestr>&RAPDIR;/@Y@m@d</cyclestr></value></envar>
+    <envar><name>RAPDIR2</name><value><cyclestr offset="1:00:00:00">&RAPDIR;/@Y@m@d</cyclestr></value></envar>
     <envar><name>HRRRDIR</name><value>&HRRRDIR;</value></envar>
     <envar><name>STATICDIR</name><value>&STATICDIR;</value></envar>
     <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
