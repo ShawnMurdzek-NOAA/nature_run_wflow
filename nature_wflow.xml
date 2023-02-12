@@ -187,6 +187,7 @@ to use for a given task.
     <envar><name>lastdate</name><value><cyclestr offset="&CYCLE_LENGTH;">@Y-@m-@d_@H:@M:@S</cyclestr></value></envar>
     <envar><name>RAPDIR1</name><value><cyclestr>&RAPDIR;/@Y@m@d</cyclestr></value></envar>
     <envar><name>RAPDIR2</name><value><cyclestr offset="1:00:00:00">&RAPDIR;/@Y@m@d</cyclestr></value></envar>
+    <envar><name>RAPDIR3</name><value><cyclestr offset="-1:00:00:00">&RAPDIR;/@Y@m@d</cyclestr></value></envar>
     <envar><name>HRRRDIR</name><value>&HRRRDIR;</value></envar>
     <envar><name>STATICDIR</name><value>&STATICDIR;</value></envar>
     <envar><name>WPSDIR</name><value>&WPSDIR;</value></envar>
