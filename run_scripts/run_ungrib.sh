@@ -34,8 +34,10 @@ if [ -e ${NAMELISTDIR}/namelist.wps.HRRR ]; then
   if [[ $hr -eq '00' && -d ${RAPDIR3} ]]; then
     echo 'beginning of a new day'
     ./link_grib.csh ${RAPDIR1}/* ${RAPDIR3}/*
-  else
+  elif [ -d ${RAPDIR2} ]; then
     ./link_grib.csh ${RAPDIR1}/* ${RAPDIR2}/*
+  else
+    ./link_grib.csh ${RAPDIR1}/*
   fi
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
@@ -54,9 +56,10 @@ elif [ -e ${NAMELISTDIR}/namelist.wps.RAP ]; then
   if [[ $hr -eq '00' && -d ${RAPDIR3} ]]; then
     echo 'beginning of a new day'
     ./link_grib.csh ${RAPDIR1}/* ${RAPDIR3}/*
-  else
+  elif [ -d ${RAPDIR2} ]; then
     ./link_grib.csh ${RAPDIR1}/* ${RAPDIR2}/*
-  fi
+  else
+    ./link_grib.csh ${RAPDIR1}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   e=$?
@@ -66,7 +69,13 @@ else
   cp ${NAMELISTDIR}/namelist.wps .
   sed -i "s|START|${startdate}|g" namelist.wps
   sed -i "s|END|${lastdate}|g" namelist.wps
-  ./link_grib.csh ${RAPDIR1}/* ${RAPDIR2}/*
+  if [[ $hr -eq '00' && -d ${RAPDIR3} ]]; then
+    echo 'beginning of a new day'
+    ./link_grib.csh ${RAPDIR1}/* ${RAPDIR3}/*
+  elif [ -d ${RAPDIR2} ]; then
+    ./link_grib.csh ${RAPDIR1}/* ${RAPDIR2}/*
+  else
+    ./link_grib.csh ${RAPDIR1}/*
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   e=$?
