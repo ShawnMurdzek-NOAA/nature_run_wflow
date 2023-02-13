@@ -60,6 +60,7 @@ elif [ -e ${NAMELISTDIR}/namelist.wps.RAP ]; then
     ./link_grib.csh ${RAPDIR1}/* ${RAPDIR2}/*
   else
     ./link_grib.csh ${RAPDIR1}/*
+  fi
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   e=$?
@@ -76,6 +77,7 @@ else
     ./link_grib.csh ${RAPDIR1}/* ${RAPDIR2}/*
   else
     ./link_grib.csh ${RAPDIR1}/*
+  fi
   ln -sf ${STATICDIR}/WPS/Vtable.raphrrr.SSM Vtable
   ./ungrib.exe
   e=$?
