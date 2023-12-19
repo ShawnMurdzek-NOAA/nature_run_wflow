@@ -1,6 +1,6 @@
 # Nature Run Workflow
 
-Rocoto workflow and supporting scripts for running a WRF-based nature run (NR) for an Observing System Simulation Experiment (OSSE) nature run. Documentation for Rocoto can be found [here](https://christopherwharrop.github.io/rocoto/). 
+Rocoto workflow and supporting scripts for running a WRF-based nature run (NR) for an Observing System Simulation Experiment (OSSE). Documentation for Rocoto can be found [here](https://christopherwharrop.github.io/rocoto/). 
 
 ## Organization:
 
@@ -18,7 +18,7 @@ Components are housed in the `src` directory, which is specified in `wflow/natur
 
 ### Input Data:
 
-The nature run relies on various datasets for initial conditions, boundary conditions, and various static fields. Paths for these datasets are set in `wflow/nature_wflow.xml`. Datasets include:
+The nature run relies on various datasets for initial conditions (ICs), lateral boundary conditions (LBCs), and various static fields. Paths for these datasets are set in `wflow/nature_wflow.xml`. Datasets include:
 
 - Rapid Refresh (RAP) GRIB2 output (for ICs and LBCs) in `RAPDIR`. RAP GRIB2 output should be further organized into subdirectories in RAPDIR based on the day the RAP was initialized. These subdirectories need to follow the naming convention `YYYYmmdd`. Data can be found on Amazon AWS [here](https://noaa-rap-pds.s3.amazonaws.com/index.html).
 - High-Resolution Rapid Refresh (HRRR) GRIB2 output (for ICs) in `HRRRDIR`. Data can be found on Amazon AWS [here](https://noaa-hrrr-bdp-pds.s3.amazonaws.com/index.html).
