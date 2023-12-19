@@ -1,22 +1,40 @@
 # Nature Run Workflow
 
-Rocoto workflow for running a WRF simulation that will serve as an Observing System Simulation Experiment (OSSE) nature run.
+Rocoto workflow and supporting scripts for running a WRF-based nature run (NR) for an Observing System Simulation Experiment (OSSE) nature run. Documentation for Rocoto can be found [here](https://christopherwharrop.github.io/rocoto/). 
 
-### Prerequisites:
+## Organization:
 
-- Compiled version of WRF in WRFDIR
-- Compiled version of WPS in WPSDIR
-- Compiled version of UPP in UPP_DIR/tests/install/bin
-- RAP GRIB2 output (for ICs and LBCs) in RAPDIR. RAP GRIB2 output should be further organized into subdirectories in RAPDIR based on the day the RAP was initialized. These subdirectories need to follow the naming convention `YYYYmmdd`.
-- HRRR GRIB2 output (for ICs and LBCs) in HRRRDIR
-- namelist.wps.HRRR and namelist.wps.RAP files in WPSDIR
-- WRFDIR contains a run directory with real.exe, wrf.exe, and namelist.input
-- Version of GSL's pygraf in PYGRAFDIR that can handle multiple output files every hour (so some modifications need to be made to the regular pygraf package)
+- `wflow`: Contains the workflow XML file and supporting scripts to run the workflow tasks.
+- `wrf_wps_namelists`: Contains the namelists for the various workflow tasks.
+
+### Components:
+
+Components are housed in the `src` directory, which is specified in `wflow/nature_wflow.xml`. Components include:
+
+- NCAR's Weather Research & Forecasting Model (WRF). [Version 4.4.2](https://github.com/wrf-model/WRF/releases/tag/v4.4.2) was used for this project.
+- NCAR's WRF Pre-Processing System (WPS). [Version 4.4](https://github.com/wrf-model/WPS/releases/tag/v4.4) was used for this project.
+- NOAA/EMC's Unified Post Processor (UPP). The [Nature_Run_SSM](https://github.com/ShawnMurdzek-NOAA/UPP/tree/Nature_Run_SSM) branch was used for this project.
+- NOAA/GSL's Pygraf, which is a python-based graphics package. The [nature_run](https://github.com/ShawnMurdzek-NOAA/pygraf/tree/nature_run) branch was used for this project.
+
+### Input Data:
+
+The nature run relies on various datasets for initial conditions, boundary conditions, and various static fields. Paths for these datasets are set in `wflow/nature_wflow.xml`. Datasets include:
+
+- Rapid Refresh (RAP) GRIB2 output (for ICs and LBCs) in `RAPDIR`. RAP GRIB2 output should be further organized into subdirectories in RAPDIR based on the day the RAP was initialized. These subdirectories need to follow the naming convention `YYYYmmdd`. Data can be found on Amazon AWS [here](https://noaa-rap-pds.s3.amazonaws.com/index.html).
+- High-Resolution Rapid Refresh (HRRR) GRIB2 output (for ICs) in `HRRRDIR`. Data can be found on Amazon AWS [here](https://noaa-hrrr-bdp-pds.s3.amazonaws.com/index.html).
+- Static data required for GEOG (a component of WPS) in `STATICDIR`. Data can be found on the NCAR WRF website [here](https://www2.mmm.ucar.edu/wrf/users/download/get_sources_wps_geog.html).
+
+## Running The Nature Run
+
+1. Download the various input datasets listed above (RAP, HRRR, GEOG static datasets).
+2. Download and compile the various components listed above (WRF, WPS, UPP, pygraf).
+3. Update the directories in `wflow/nature_wflow.xml` as well as the namelists in `wrf_wps_namelists` to match your machine. Job parameters (e.g., account, queue) will also need to be updated in `wflow/nature_wflow.xml`. 
+4. If not running on a supported machine (Hera, Jet, Orion), add `wflow/env/*.env` files to configure the environment for the various workflow tasks.
 
 ### Using Cron
 
 It's easiest to run this workflow using cron so that rocotorun is executed every _X_ minutes. To
-edit your crontab, use the following command in your home direcory:
+edit your crontab, use the following command in your home directory:
 
 `crontab -e`
 
@@ -31,7 +49,3 @@ MAILTO=email@noaa.gov
 Add the following line to run the workflow every 15 minutes:
 
 `*/15 * * * * /path/to/workflow/run_rocoto.sh`
-
-### Other Notes:
-
-- All tasks within the workflow have been tested

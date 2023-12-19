@@ -1,0 +1,9 @@
+Data Origins
+------------
+
+Both the GEOGRID and METGRID tables come from the real-time HRRR on Jet, which is located here: 
+/home/rtrr/HRRR/static/WPS/. These tables were also used in Eric James' 1-km ICICLE simulations.
+
+Vtable.raphrrr.SSM is the same as Vtable.raphrrr found in WPS except that the QI field is updated.
+Vtable.raphrrr.SSM.ATM only contains the atmospheric fields whereas Vtable.raphrrr.SSM.SFC only
+contains the surface fields.

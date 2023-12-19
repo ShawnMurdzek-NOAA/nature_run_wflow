@@ -64,7 +64,7 @@ Directories and files.
 <!ENTITY FAKEOBS_OUT_DIR          "&SIMDIR;/synthetic_obs">
 <!ENTITY RAPDIR                   "&HOME;/RAP_data/grib">
 <!ENTITY HRRRDIR                  "&HOME;/HRRR_data">
-<!ENTITY STATICDIR                "&HOME;/static_data">
+<!ENTITY STATICDIR                "&SIMDIR;/wrf_wps_namelists">
 <!ENTITY LOAD_MODULES_RUN_TASK_FP "&WFDIR;/load_modules_run_task.sh">
 
 <!--

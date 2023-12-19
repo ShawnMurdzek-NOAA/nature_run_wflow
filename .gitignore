@@ -1,3 +1,10 @@
 
 # Database files
 *.db
+
+# Log files
+*.log
+
+# Output and restart directories
+output/
+restart/
