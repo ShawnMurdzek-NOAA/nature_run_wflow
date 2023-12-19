@@ -5,7 +5,7 @@ Rocoto workflow and supporting scripts for running a WRF-based nature run (NR) f
 ## Organization:
 
 - `wflow`: Contains the workflow XML file and supporting scripts to run the workflow tasks.
-- `wrf_wps_namelists`: Contains the namelists for the various workflow tasks.
+- `wrf_wps_namelists`: Contains the namelists for the various workflow tasks as well as smaller static files for WPS (e.g., TBL and Vtable files).
 
 ### Components:
 
