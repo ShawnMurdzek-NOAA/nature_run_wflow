@@ -15,6 +15,7 @@ Components are housed in the `src` directory, which is specified in `wflow/natur
 - NCAR's WRF Pre-Processing System (WPS). [Version 4.4](https://github.com/wrf-model/WPS/releases/tag/v4.4) was used for this project.
 - NOAA/EMC's Unified Post Processor (UPP). The [Nature_Run_SSM](https://github.com/ShawnMurdzek-NOAA/UPP/tree/Nature_Run_SSM) branch was used for this project.
 - NOAA/GSL's Pygraf, which is a python-based graphics package. The [nature_run](https://github.com/ShawnMurdzek-NOAA/pygraf/tree/nature_run) branch was used for this project.
+- [JOINER](https://github.com/ShawnMurdzek-NOAA/JOINER) program, which is used to combine multiple netCDF files into one.
 
 ### Input Data:
 
@@ -49,3 +50,9 @@ MAILTO=email@noaa.gov
 Add the following line to run the workflow every 15 minutes:
 
 `*/15 * * * * /path/to/workflow/run_rocoto.sh`
+
+## General Notes
+
+- __Model Crashes in Complex Terrain__: WRF can sometimes crash near complex terrain. These crashes are usually first reported in the land surface model or surface scheme and are often accompanied with unrealistic values of meteorological fields (e.g., negative pressure). To prevent this, terrain height is smoothed within the GEOGRID program in WPS (see `wrf_wps_namelists/WPS/GEOGRIB.TBL`). It is possible that additional smoothing may be necessary, especially if the horizontal grid spacing is further reduced.
+- __Split WRF Output__: This workflow uses I/O format 102 in WRF, which produces one output file per processor. This is necessary to prevent the output netCDF files from growing so large that they exceed the file size allowed by WRF (4 GB?). UPP, however, expects all output to be in a single netCDF file. Thus, the netCDF files output by WRF need to be stitched together before running UPP. This is done using the JOINER program.
+- __Tweaks NSSL Microphysics__: Set `iusewetsnow = 0`, `esstem1 = -15`, and `esstem2 = -10` within the NSSL 2-moment scheme source file (`WRF/phys/module_mp_nssl_2mom.F`). This is done to reduce diagnosed reflectivity values.
